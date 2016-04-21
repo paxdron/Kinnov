@@ -20,6 +20,22 @@ import javax.net.ssl.TrustManagerFactory;
  */
 public class Socket_TLS {
 
+    /*
+    Metodos:
+    Usamos está función para conectarnos con algún servidor, solo debemos esocger el puerto y el servidor como dominio o IP
+    Init_Socket_TLS(Puerto,Servidor,Context);
+
+    Para cerrar el socket de comunnicación utilizamos está función, previamente abierto el socket
+    Close_Socket_TLS();
+
+    Para enviar un buffer lo enviamos con está función pasando el apuntador del buffer y el tamaño que deseamos enviar
+    Send_Socket_TLS(Buffer, Tamaño);
+
+    Procesos:
+    Este proceso se inicia cuando se llama la función Init_Socket_TLS, se crea un nuevo hilo para escuchar lo que resiba el socket
+    Process_Read_Socket_TLS;
+     */
+
     private static SSLSocket SocketTLS;
 
     public boolean Init_Socket_TLS(int Port, String Servidor, Context context){
