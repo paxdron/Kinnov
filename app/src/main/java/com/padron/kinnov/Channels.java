@@ -1,5 +1,6 @@
 package com.padron.kinnov;
 
+import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -41,6 +42,19 @@ public class Channels extends AppCompatActivity {
                 (FancyButton)findViewById(R.id.btn_upCh4),
                 (FancyButton)findViewById(R.id.btn_downCh4),
                 (TextView)findViewById(R.id.tvCanal4Value));
+        Canal[] canales={C1,C2,C3,C4};
+
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
+        for (Canal Chanel:canales
+             ) {
+            Chanel.tvValue.setTypeface(custom_font);
+        }
+
+        ((TextView)findViewById(R.id.tvTituloC1)).setTypeface(custom_font);
+        ((TextView)findViewById(R.id.tvTituloC2)).setTypeface(custom_font);
+        ((TextView)findViewById(R.id.tvTituloC3)).setTypeface(custom_font);
+        ((TextView)findViewById(R.id.tvTituloC4)).setTypeface(custom_font);
+        stop.getTextViewObject().setTypeface(custom_font);
     }
     
     

@@ -8,11 +8,38 @@
     tools:context="com.padron.kinnov.Channels"
     >
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/footerHeight"
+        android:background="@color/colorPrimaryDark"
+        android:layout_alignParentBottom="true"
+        android:id="@+id/footerChanels"
+        android:orientation="horizontal"
+        ></LinearLayout>
+
+    <mehdi.sakout.fancybuttons.FancyButton
+        android:id="@+id/fabStop"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/footerHeight"
+        android:layout_marginBottom="@dimen/footer_fab_margin"
+        android:padding="12dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        fancy:fb_defaultColor="@color/colorAccent"
+        fancy:fb_focusColor="@color/colorAccentDark"
+        fancy:fb_iconResource="@drawable/ic_stop_24dp"
+        fancy:fb_iconPosition="right"
+        fancy:fb_radius="64dp"
+        fancy:fb_text="Detener"
+        fancy:fb_textColor="#FFFFFF"
+        fancy:fb_textSize="20sp"
+        />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
+        android:layout_above="@id/footerChanels"
         >
         <LinearLayout
             android:layout_width="match_parent"
@@ -31,15 +58,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tvTituloC1"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal1"
-                    android:textColor="@color/colorWhite"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh1"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_up_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -51,7 +80,6 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/tvAmp"
                     android:text="0 mAh"
-                    android:textColor="@color/colorWhite"
                     android:id="@+id/tvCanal1Value"
                     android:padding="10dp"
                     />
@@ -59,7 +87,9 @@
                     android:id="@+id/btn_downCh1"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_down_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -78,15 +108,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tvTituloC2"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal2"
-                    android:textColor="@color/colorWhite"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh2"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_up_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -98,7 +130,6 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/tvAmp"
                     android:text="0 mAh"
-                    android:textColor="@color/colorWhite"
                     android:id="@+id/tvCanal2Value"
                     android:padding="10dp"
                     />
@@ -106,7 +137,9 @@
                     android:id="@+id/btn_downCh2"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_down_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -134,15 +167,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tvTituloC3"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal3"
-                    android:textColor="@color/colorWhite"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh3"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_up_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -154,7 +189,6 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/tvAmp"
                     android:text="0 mAh"
-                    android:textColor="@color/colorWhite"
                     android:id="@+id/tvCanal3Value"
                     android:padding="10dp"
                     />
@@ -162,7 +196,9 @@
                     android:id="@+id/btn_downCh3"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_down_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -181,15 +217,17 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:id="@+id/tvTituloC4"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal4"
-                    android:textColor="@color/colorWhite"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh4"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_up_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -201,7 +239,6 @@
                     android:layout_height="wrap_content"
                     android:textSize="@dimen/tvAmp"
                     android:text="0 mAh"
-                    android:textColor="@color/colorWhite"
                     android:id="@+id/tvCanal4Value"
                     android:padding="10dp"
                     />
@@ -209,7 +246,9 @@
                     android:id="@+id/btn_downCh4"
                     android:layout_width="64dp"
                     android:layout_height="64dp"
-                    fancy:fb_defaultColor="@color/colorPrimary"
+                    fancy:fb_defaultColor="@color/colorTransparent"
+                    fancy:fb_borderColor="@color/colorPrimary"
+                    fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/ic_keyboard_arrow_down_24dp"
                     fancy:fb_iconPaddingLeft="0dp"
@@ -222,28 +261,5 @@
 
 
     </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="@dimen/footerHeight"
-        android:background="@color/colorPrimaryDark"
-        android:layout_alignParentBottom="true"
-        ></LinearLayout>
-
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:id="@+id/fabStop"
-        android:layout_width="@dimen/footerHeight"
-        android:layout_height="@dimen/footerHeight"
-        android:layout_marginBottom="@dimen/footer_fab_margin"
-        android:padding="10dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        fancy:fb_defaultColor="@color/colorAccent"
-        fancy:fb_focusColor="@color/colorAccentDark"
-        fancy:fb_iconResource="@drawable/ic_stop_24dp"
-        fancy:fb_iconPaddingLeft="0dp"
-        fancy:fb_iconPaddingRight="0dp"
-        fancy:fb_radius="64dp"
-        fancy:fb_textColor="#FFFFFF" />
 
 </RelativeLayout>

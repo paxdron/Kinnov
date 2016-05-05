@@ -10,6 +10,12 @@ android {
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        generatedDensities = []
+
+        aaptOptions {
+            additionalParameters "--no-version-vectors"
+        }
+
     }
     buildTypes {
         release {
@@ -26,10 +32,11 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
-    compile 'com.github.ViksaaSkool:AwesomeSplash:v1.0.0'
+    compile 'pl.droidsonroids.gif:android-gif-drawable:1.1.+'
     compile 'com.android.support:design:+'
     compile 'com.karumi:expandableselector:1.0.0'
     compile 'com.github.medyo:fancybuttons:1.7'
+    compile 'com.android.support:cardview-v7:23.2.1'
 
 
 }
