@@ -8,7 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Menu extends AppCompatActivity  {
+public class MenuMaquina extends AppCompatActivity  {
 
     private RecyclerView recycler;
     private LinearLayoutManager lManager;

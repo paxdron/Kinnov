@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory
+        android:key="pref_re"
+        android:title="@string/pref_gen">
+        <EditTextPreference
+            android:key="direccion_ip"
+            android:title="@string/direccion_ip"
+            android:summary="@string/direccion_ip_resumen"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" />
+        <EditTextPreference
+            android:key="puerto"
+            android:title="@string/puerto"
+            android:summary="@string/puerto_resumen"
+            android:selectAllOnFocus="true"
+            android:singleLine="true" />
+    </PreferenceCategory>
+</PreferenceScreen>

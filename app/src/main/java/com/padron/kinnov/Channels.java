@@ -6,6 +6,8 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.padron.kinnov.Conexion.Socket_TLS;
+
 import java.util.zip.Inflater;
 
 import mehdi.sakout.fancybuttons.FancyButton;
@@ -14,15 +16,21 @@ public class Channels extends AppCompatActivity {
 
     FancyButton stop;
     private  Canal C1,C2,C3,C4;
+    public ClaseEventos eventosListener;
+    Socket_TLS socket;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channels);
+        socket=new Socket_TLS();
         stop=(FancyButton)findViewById(R.id.fabStop);
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                byte[]pack=Socket_TLS.pack((byte)17);
+                socket.Send_Socket_TLS(pack,pack.length);
                 Channels.this.finish();
+
             }
         });
 

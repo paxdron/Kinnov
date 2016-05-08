@@ -7,6 +7,7 @@ import com.karumi.expandableselector.ExpandableItem;
 import com.karumi.expandableselector.ExpandableSelector;
 import com.karumi.expandableselector.ExpandableSelectorListener;
 import com.karumi.expandableselector.OnExpandableItemClickListener;
+import com.padron.kinnov.Conexion.Socket_TLS;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,21 +25,24 @@ public class Campo {
     int MaxValue;
     int CurrentValue;
 
+    Socket_TLS socket;
     int Tipo;
-    public Campo(ExpandableSelector eSelector, String unidad, int[] values, List<ExpandableSelector> lista) {
+    public Campo(ExpandableSelector eSelector, String unidad, int[] values, List<ExpandableSelector> lista, Socket_TLS socket) {
         this.eSelector=eSelector;
         otros=lista;
         setValues(unidad,values);
         expandido=false;
+        this.socket=socket;
     }
 
-    public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista) {
+    public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista, Socket_TLS socket) {
         this.eSelector=eSelector;
         otros=lista;
         setMinMaxValues(unidad, Min, Max);
+        this.socket=socket;
     }
 
-    public Campo(ExpandableSelector eSelector, String[] values, List<ExpandableSelector> lista) {
+    public Campo(ExpandableSelector eSelector, String[] values, List<ExpandableSelector> lista, Socket_TLS socket) {
         this.eSelector=eSelector;
         otros=lista;
         expandableItems= new ArrayList<>();
@@ -50,6 +54,7 @@ public class Campo {
         }
         eSelector.showExpandableItems(expandableItems);
         setListener1();
+        this.socket=socket;
     }
 
     void setValues (String unidad,int[]values){

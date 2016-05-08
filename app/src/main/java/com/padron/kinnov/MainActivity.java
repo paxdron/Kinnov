@@ -1,24 +1,31 @@
 package com.padron.kinnov;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Typeface;
+import android.preference.PreferenceManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.karumi.expandableselector.ExpandableItem;
 import com.karumi.expandableselector.ExpandableSelector;
-import com.karumi.expandableselector.OnExpandableItemClickListener;
 
 import java.util.ArrayList;
 import java.util.List;
-import com.padron.kinnov.Campo.*;
+
+import com.padron.kinnov.Conexion.Socket_TLS;
+import com.padron.kinnov.events.Event;
+import com.padron.kinnov.events.IEventHandler;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
@@ -35,8 +42,14 @@ public class MainActivity extends AppCompatActivity {
     private FancyButton[] modosBtns;
     private int modSelected;
     private LinearLayout layoutcarrier,layoutduartion_burst, layoutfreq_burst, layouttAscenso, layouttEncendido, layouttBajada, layouttReposo, layouttAplicacion;
+    private int serverPort;
+    private String serverAddress;
+    public ClaseEventos eventosListener;
+    public Socket_TLS socket;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         eSelectors= new ArrayList<>();
@@ -45,39 +58,61 @@ public class MainActivity extends AppCompatActivity {
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                byte[]pack=Socket_TLS.pack((byte)17);
+                socket.Send_Socket_TLS(pack,pack.length);
                 startActivity(new Intent(getApplicationContext(), Channels.class));
             }
         });
         initializeUI();
-
+        getSharedPreferences();
+        conectarServidor();
         modoEstimulacion();
+        eventosListener=ClaseEventos.getInstance();
+        eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
+            @Override
+            public void callback(Event event) {
+                Log.d("Event Calback", "I am in a callback " + event.getStrType() + " ::param = " + event.getParams());
+                int i=1;
+                byte elemento;
+                int sizeBUFFER=Socket_TLS.BUFFER.size();
+                do{
+                    elemento=Socket_TLS.BUFFER.get(i++);
+                    System.out.print((char)elemento);
+                }while(elemento!=2);
 
+                for (i=i;i<sizeBUFFER;i++) {
+                    elemento=Socket_TLS.BUFFER.get(i);
+                    System.out.print((int)elemento);
+                }
+                System.out.println();
+            }
+        });
     }
 
     private void initializeExpandableSelector() {
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_carrier));
-        Campo campCarrier=new Campo(eSelectors.get(0),getString(R.string.khz), new int[]{1, 4},eSelectors);
+        Campo campCarrier=new Campo(eSelectors.get(0),getString(R.string.khz), new int[]{1, 4},eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_duartion_burst));
-        Campo campDurationBurst=new Campo(eSelectors.get(1),getString(R.string.ms), new int[]{2, 4},eSelectors);
+        Campo campDurationBurst=new Campo(eSelectors.get(1),getString(R.string.ms), new int[]{2, 4},eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_freq_burst));
-        Campo campFreqBurst = new Campo(eSelectors.get(2), getString(R.string.hz), 1,120,eSelectors);
+        Campo campFreqBurst = new Campo(eSelectors.get(2), getString(R.string.hz), 1,120,eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tAscenso));
-        Campo campRise = new Campo(eSelectors.get(3), getString(R.string.s), 1,20,eSelectors);
+        Campo campRise = new Campo(eSelectors.get(3), getString(R.string.s), 1,20,eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tEncendido));
-        Campo campOn = new Campo(eSelectors.get(4), getString(R.string.s), 1,60,eSelectors);
+        Campo campOn = new Campo(eSelectors.get(4), getString(R.string.s), 1,60,eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tBajada));
-        Campo campDecay = new Campo(eSelectors.get(5), getString(R.string.s), 1,20,eSelectors);
+        Campo campDecay = new Campo(eSelectors.get(5), getString(R.string.s), 1,20,eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tReposo));
-        Campo campOff = new Campo(eSelectors.get(6), getString(R.string.s), 1,60,eSelectors);
+        Campo campOff = new Campo(eSelectors.get(6), getString(R.string.s), 1,60,eSelectors,socket);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tAplicacion));
-        Campo campAplication=new Campo(eSelectors.get(7),getString(R.string.m), 1,60,eSelectors);
+        Campo campAplication=new Campo(eSelectors.get(7),getString(R.string.m), 1,60,eSelectors,socket);
         /*eSelectors.add((ExpandableSelector) findViewById(R.id.es_modoEstim));
         Campo campSimmMode = new Campo(eSelectors.get(8),getResources().getStringArray(R.array.stimm_mode),eSelectors);*/
 
@@ -217,11 +252,59 @@ public class MainActivity extends AppCompatActivity {
 
 
     public void menu(View v){
-        startActivity(new Intent(this,Menu.class));
+        startActivity(new Intent(this, MenuMaquina.class));
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.network:
+                //Toast.makeText(this, "ADD!", Toast.LENGTH_SHORT).show();
+                Intent i = new Intent(this, SettingsActivity.class);
+                startActivity(i);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(!Socket_TLS.Conectado){
+            conectarServidor();
+        }
+    }
 
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        if(!Socket_TLS.Conectado){
+            conectarServidor();
+        }
 
+    }
+
+    private void conectarServidor(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                socket = new Socket_TLS();
+                socket.Init_Socket_TLS(serverPort,serverAddress,getBaseContext());
+            }
+        }).start();
+    }
+
+    private void getSharedPreferences(){
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        serverAddress = SP.getString("direccion_ip", "192.168.1.1");
+        serverPort = Integer.parseInt(SP.getString("puerto","9999"));
+    }
 }

@@ -44,27 +44,10 @@
         <item>El objetivo del uso de ese protocolo es promover analgesia por la activación de la compuerta de dolor.</item>
         <item>Ese protocolo tiene la capacidad de promover la analgesia por la estimulación del mecanismo descendiente relacionado a la liberación de endorfinas.</item>
     </array>
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    <string name="menuItem">Configuración Red</string>
+    <string name="direccion_ip">Direccion IP</string>
+    <string name="direccion_ip_resumen">Direccion IP del Servidor</string>
+    <string name="puerto_resumen">Puerto del Servidor</string>
+    <string name="puerto">Puerto</string>
+    <string name="pref_gen">Red</string>
 </resources>
