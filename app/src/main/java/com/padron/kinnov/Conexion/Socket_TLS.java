@@ -46,14 +46,16 @@ public class Socket_TLS {
 
     private static Socket SocketTLS;
     public static boolean Conectado=false;
-    public static ArrayList<Byte> BUFFER;
+    public static byte[] BUFFER;
     public static boolean Scape=false;
     public static final byte INIT_FRAME  =   16;
     public static final byte FINAL_FRAME =   17;
     public static final byte DATA_LINK   =   18;
     public static final byte COMANDO     =   31;
-
-    private static ArrayList<Byte> receive;
+    public static final byte[] COMMAND_UP ={23,25,27,29};
+    public static final byte[] COMMAND_DOWN ={24,25,27,29};
+    private static int indice=0;
+    private static byte[] receive;
     public boolean Init_Socket_TLS(int Port, String Servidor, Context context){
         try {
             /*KeyStore trustStore = KeyStore.getInstance("BKS");
@@ -115,7 +117,7 @@ public class Socket_TLS {
                 ClaseEventos eventos= ClaseEventos.getInstance();
                 InputStream inServer = SocketTLS.getInputStream();
                 DataInputStream in = new DataInputStream(inServer);
-                receive= new ArrayList<>();
+                receive= new byte[50];
                 boolean receiving=false;
                 while (SocketTLS.isConnected()){
                     Temp = in.readByte();
@@ -139,7 +141,7 @@ public class Socket_TLS {
         switch (data){
             case INIT_FRAME:
                 if(!Scape) {
-                    receive.clear();
+                    indice=0;
                     return false;
                 }
             case FINAL_FRAME:
@@ -157,25 +159,22 @@ public class Socket_TLS {
             default:
                 break;
         }
-        receive.add(data);
+        receive[indice++]=data;
         Scape=false;
         return false;
     }
 
     public static byte[] pack(byte Boton){
-        ArrayList<Byte> paquete = new ArrayList<>();
-        paquete.add(INIT_FRAME);
-        paquete.add(COMANDO);
+        byte[] paquete = new byte[5];
+        int i=0;
+        paquete[i++]=INIT_FRAME;
+        paquete[i++]=COMANDO;
         if(Boton==INIT_FRAME||Boton==FINAL_FRAME||Boton==DATA_LINK){
-            paquete.add(DATA_LINK);
+            paquete[i++]=DATA_LINK;
         }
-        paquete.add(Boton);
-        paquete.add(FINAL_FRAME);
-        byte[]pack= new byte[paquete.size()];
-        for (int i=0;i<paquete.size();i++) {
-            pack[i]=paquete.get(i);
-        }
-        return pack;
+        paquete[i++]=Boton;
+        paquete[i++]=FINAL_FRAME;
+        return paquete;
     }
 }
 

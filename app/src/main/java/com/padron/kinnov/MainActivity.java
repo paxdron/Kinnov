@@ -21,6 +21,7 @@ import com.karumi.expandableselector.ExpandableItem;
 import com.karumi.expandableselector.ExpandableSelector;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import com.padron.kinnov.Conexion.Socket_TLS;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
     private String serverAddress;
     public ClaseEventos eventosListener;
     public Socket_TLS socket;
-
+    private StringBuilder textoPantalla;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
 
@@ -55,18 +56,11 @@ public class MainActivity extends AppCompatActivity {
         eSelectors= new ArrayList<>();
         initializeExpandableSelector();
         start = (FancyButton) findViewById(R.id.fabStart);
-        start.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                byte[]pack=Socket_TLS.pack((byte)17);
-                socket.Send_Socket_TLS(pack,pack.length);
-                startActivity(new Intent(getApplicationContext(), Channels.class));
-            }
-        });
         initializeUI();
         getSharedPreferences();
         conectarServidor();
         modoEstimulacion();
+        textoPantalla= new StringBuilder();
         eventosListener=ClaseEventos.getInstance();
         eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
             @Override
@@ -74,17 +68,19 @@ public class MainActivity extends AppCompatActivity {
                 Log.d("Event Calback", "I am in a callback " + event.getStrType() + " ::param = " + event.getParams());
                 int i=1;
                 byte elemento;
-                int sizeBUFFER=Socket_TLS.BUFFER.size();
-                do{
-                    elemento=Socket_TLS.BUFFER.get(i++);
-                    System.out.print((char)elemento);
-                }while(elemento!=2);
-
-                for (i=i;i<sizeBUFFER;i++) {
-                    elemento=Socket_TLS.BUFFER.get(i);
-                    System.out.print((int)elemento);
+                int sizeBUFFER=Socket_TLS.BUFFER.length;
+                for(int j=0;j<40;j++){
+                    System.out.print(Socket_TLS.BUFFER[j]+" ");
                 }
                 System.out.println();
+            }
+        });
+        start.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                byte[] pack = Socket_TLS.pack((byte) 17);
+                socket.Send_Socket_TLS(pack, pack.length);
+                startActivity(new Intent(getApplicationContext(), Channels.class));
             }
         });
     }
@@ -281,6 +277,25 @@ public class MainActivity extends AppCompatActivity {
         if(!Socket_TLS.Conectado){
             conectarServidor();
         }
+        eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
+            @Override
+            public void callback(Event event) {
+                Log.d("Event Calback", "I am in a callback " + event.getStrType() + " ::param = " + event.getParams());
+                int i=1;
+                byte elemento;
+                int sizeBUFFER=Socket_TLS.BUFFER.length;
+                for(int j=0;j<40;j++){
+                    System.out.print(Socket_TLS.BUFFER[j]+" ");
+                }
+                System.out.println();
+            }
+        });
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        eventosListener.removeEventListener(Event.MSGRCV);
     }
 
     @Override
