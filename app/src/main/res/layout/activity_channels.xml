@@ -91,7 +91,8 @@
                     fancy:fb_borderWidth="1dp"
                     fancy:fb_focusColor="@color/colorPrimaryDark"
                     fancy:fb_iconResource="@drawable/down_channel"
-                    fancy:fb_iconPadding="24dp"
+                    fancy:fb_iconPaddingLeft="0dp"
+                    fancy:fb_iconPaddingRight="0dp"
                     fancy:fb_radius="64dp"
                     fancy:fb_textColor="#FFFFFF" />
             </LinearLayout>
