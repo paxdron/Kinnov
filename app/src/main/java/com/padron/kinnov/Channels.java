@@ -63,7 +63,7 @@ public class Channels extends AppCompatActivity {
                     canales.setValues(textoLCD);
                 }else {
                     modo=textoLCD.substring(0,5).replaceAll("\\s+","");
-                    if(Valores.ArrayModos.contains(modo)){
+                    if(Values.ArrayModos.contains(modo)){
                         Channels.this.finish();
                     }
                 }

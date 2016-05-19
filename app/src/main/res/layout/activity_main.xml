@@ -75,7 +75,7 @@
                     fancy:fb_radius="64dp"
                     fancy:fb_text="Continuo"
                     fancy:fb_textColor="@color/colorPrimary"
-                    fancy:fb_borderColor="@color/colorGray"
+                    fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
@@ -88,7 +88,7 @@
                     fancy:fb_radius="64dp"
                     fancy:fb_text="Sincronizado"
                     fancy:fb_textColor="@color/colorPrimary"
-                    fancy:fb_borderColor="@color/colorGray"
+                    fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
@@ -101,7 +101,7 @@
                     fancy:fb_radius="64dp"
                     fancy:fb_text="Recíproco"
                     fancy:fb_textColor="@color/colorPrimary"
-                    fancy:fb_borderColor="@color/colorGray"
+                    fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"
                     />
             </LinearLayout>

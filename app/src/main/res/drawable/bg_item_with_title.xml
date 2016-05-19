@@ -20,7 +20,10 @@
 
     <solid
         android:color="@color/colorWhite"/>
-
+    <stroke
+        android:color="@color/colorPrimary"
+        android:width="1dp"
+        />
     <size
         android:width="@dimen/item_size"
         android:height="@dimen/item_size"/>

@@ -32,57 +32,58 @@ import mehdi.sakout.fancybuttons.FancyButton;
 
 public class MainActivity extends AppCompatActivity {
     private List<ExpandableSelector> eSelectors;
-    private List<ExpandableItem> expandableItems;
-    private int valuefreqBusrt=1;
     private FancyButton start;
     private Typeface custom_font;
 
     private FancyButton modo1,modo2,modo3;
-    private boolean expanded;
     private String[] modosLabels;
     private FancyButton[] modosBtns;
-    private int modSelected;
-    private LinearLayout layoutcarrier,layoutduartion_burst, layoutfreq_burst, layouttAscenso, layouttEncendido, layouttBajada, layouttReposo, layouttAplicacion;
-    private int serverPort;
-    private String serverAddress;
+    private LinearLayout layouttAscenso, layouttEncendido, layouttBajada, layouttReposo;
     public ClaseEventos eventosListener;
     public Socket_TLS socket;
-    private StringBuilder textoPantalla;
+    byte elemento;
+    StringBuilder textoPantalla= new StringBuilder();
+    byte []buffer;
+    int i=0;
+    private String textoLCD;
+    private String modo;
+    private int ColCursor, RawCursor;
+    StimMode stimMode;
+    Values values;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         eSelectors= new ArrayList<>();
-        initializeExpandableSelector();
-        start = (FancyButton) findViewById(R.id.fabStart);
         initializeUI();
-        getSharedPreferences();
-        conectarServidor();
         modoEstimulacion();
+        initializeExpandableSelector();
         textoPantalla= new StringBuilder();
         eventosListener=ClaseEventos.getInstance();
         eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
             @Override
             public void callback(Event event) {
-                Log.d("Event Calback", "I am in a callback " + event.getStrType() + " ::param = " + event.getParams());
-                int i=1;
-                byte elemento;
-                int sizeBUFFER=Socket_TLS.BUFFER.length;
-                for(int j=0;j<40;j++){
-                    System.out.print(Socket_TLS.BUFFER[j]+" ");
-                }
-                System.out.println();
+                parseMessage();
             }
         });
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                /*String texto = "Cont.  4  4  120              66";
+                modo = texto.substring(0, 5).replaceAll("\\s+", "");
+                if (Values.ArrayModos.contains(modo)) {
+                    values.setValues(texto, modo);
+                }*/
                 byte[] pack = Socket_TLS.pack((byte) 17);
                 socket.Send_Socket_TLS(pack, pack.length);
-                startActivity(new Intent(getApplicationContext(), Channels.class));
             }
         });
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        updateUI();
     }
 
     private void initializeExpandableSelector() {
@@ -111,95 +112,24 @@ public class MainActivity extends AppCompatActivity {
         Campo campAplication=new Campo(eSelectors.get(7),getString(R.string.m), 1,60,eSelectors,socket);
         /*eSelectors.add((ExpandableSelector) findViewById(R.id.es_modoEstim));
         Campo campSimmMode = new Campo(eSelectors.get(8),getResources().getStringArray(R.array.stimm_mode),eSelectors);*/
-
+        values= new Values(stimMode,campCarrier,campDurationBurst,campFreqBurst,campRise,campOn,campDecay,campOff,campAplication,socket);
     }
 
 
     public void modoEstimulacion(){
-        expanded=false;
         TextView tx = (TextView)findViewById(R.id.tituloModo);
         modo1=(FancyButton)findViewById(R.id.modo1);
         modo2=(FancyButton)findViewById(R.id.modo2);
         modo3=(FancyButton)findViewById(R.id.modo3);
-        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
         modosBtns = new FancyButton[]{modo1, modo2, modo3};
         modosLabels=getResources().getStringArray(R.array.stimm_mode);
         tx.setTypeface(custom_font);
-
+        stimMode=new StimMode(modosBtns,modosLabels,new LinearLayout[]{layouttAscenso,layouttEncendido,layouttBajada,layouttReposo,});
        /* for (FancyButton fB:modosBtns
                 ) {
             fB.getTextViewObject().setTypeface(custom_font);
         }*/
-        modo1.setVisibility(View.GONE);
-        modo3.setVisibility(View.GONE);
 
-        modo1.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectMode(0);
-            }
-        });
-        modo2.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (!expanded) {
-                    setTexts();
-                    modo1.setVisibility(View.VISIBLE);
-                    modo3.setVisibility(View.VISIBLE);
-                    expanded = true;
-                } else {
-                    selectMode(1);
-                }
-            }
-        });
-        modo3.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectMode(2);
-            }
-        });
-    }
-
-    public void setTexts(){
-        for (int i=0;i<3;i++) {
-            modosBtns[i].setText(modosLabels[i]);
-        }
-    }
-
-    private void selectMode(int indice){
-        modSelected=indice;
-        switch(modSelected){
-            case 0:
-                hideLayouts();
-                break;
-            default:
-                showAllLayouts();
-                break;
-        }
-
-        Collapse();
-    }
-
-    private void Collapse(){
-        modo2.setText(modosLabels[modSelected]);
-        AlphaAnimation fade_out = new AlphaAnimation(1.0f, 0.0f);
-        fade_out.setDuration(200);
-        fade_out.setAnimationListener(new Animation.AnimationListener() {
-            public void onAnimationStart(Animation arg0) {
-            }
-
-            public void onAnimationRepeat(Animation arg0) {
-            }
-
-            public void onAnimationEnd(Animation arg0) {
-                modo1.setVisibility(View.GONE);
-                modo3.setVisibility(View.GONE);
-                modo2.setText(modosLabels[modSelected]);
-            }
-        });
-        modo3.startAnimation(fade_out);
-        modo1.startAnimation(fade_out);
-        expanded=false;
     }
 
     private void initializeUI(){
@@ -212,14 +142,11 @@ public class MainActivity extends AppCompatActivity {
         ((TextView)findViewById(R.id.tvtBajada)).setTypeface(custom_font);
         ((TextView)findViewById(R.id.tvtReposo)).setTypeface(custom_font);
         ((TextView)findViewById(R.id.tvtAplicacion)).setTypeface(custom_font);
-        layoutcarrier=(LinearLayout)findViewById(R.id.layoutcarrier);
-        layoutduartion_burst=(LinearLayout)findViewById(R.id.layoutduartion_burst);
-        layoutfreq_burst=(LinearLayout)findViewById(R.id.layoutfreq_burst);
         layouttAscenso=(LinearLayout)findViewById(R.id.layouttAscenso);
         layouttEncendido=(LinearLayout)findViewById(R.id.layouttEncendido);
         layouttBajada=(LinearLayout)findViewById(R.id.layouttBajada);
         layouttReposo=(LinearLayout)findViewById(R.id.layouttReposo);
-        layouttAplicacion=(LinearLayout)findViewById(R.id.layouttAplicacion);
+        start = (FancyButton) findViewById(R.id.fabStart);
         start.getTextViewObject().setTypeface(custom_font);
         Toolbar toolbar =(Toolbar)findViewById(R.id.myToolbar);
         toolbar.setTitle("");
@@ -228,23 +155,6 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
     }
 
-    private void showAllLayouts(){
-        layoutcarrier.setVisibility(View.VISIBLE);
-        layoutduartion_burst.setVisibility(View.VISIBLE);
-        layoutfreq_burst.setVisibility(View.VISIBLE);
-        layouttAscenso.setVisibility(View.VISIBLE);
-        layouttEncendido.setVisibility(View.VISIBLE);
-        layouttBajada.setVisibility(View.VISIBLE);
-        layouttReposo.setVisibility(View.VISIBLE);
-        layouttAplicacion.setVisibility(View.VISIBLE);
-    }
-
-    private void hideLayouts(){
-        layouttAscenso.setVisibility(View.GONE);
-        layouttEncendido.setVisibility(View.GONE);
-        layouttBajada.setVisibility(View.GONE);
-        layouttReposo.setVisibility(View.GONE);
-    }
 
 
     public void menu(View v){
@@ -275,19 +185,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         if(!Socket_TLS.Conectado){
-            conectarServidor();
+            updateUI();
         }
         eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
             @Override
             public void callback(Event event) {
-                Log.d("Event Calback", "I am in a callback " + event.getStrType() + " ::param = " + event.getParams());
-                int i=1;
-                byte elemento;
-                int sizeBUFFER=Socket_TLS.BUFFER.length;
-                for(int j=0;j<40;j++){
-                    System.out.print(Socket_TLS.BUFFER[j]+" ");
-                }
-                System.out.println();
+                parseMessage();
             }
         });
     }
@@ -302,24 +205,61 @@ public class MainActivity extends AppCompatActivity {
     protected void onRestart() {
         super.onRestart();
         if(!Socket_TLS.Conectado){
-            conectarServidor();
+            updateUI();
         }
 
     }
 
-    private void conectarServidor(){
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                socket = new Socket_TLS();
-                socket.Init_Socket_TLS(serverPort,serverAddress,getBaseContext());
+    public void parseMessage(){
+        buffer=Socket_TLS.BUFFER;
+        i=1;
+        textoPantalla.setLength(0);
+        elemento=buffer[i++];
+        System.out.println();
+        while(elemento!=2){
+            textoPantalla.append((char) elemento);
+            System.out.print(elemento+" ");
+            elemento=buffer[i++];
+            if(elemento==2&&i<33)
+                elemento=buffer[i];
+        }
+        RawCursor=(int)buffer[i++];
+        ColCursor=(int)buffer[i++];
+        textoLCD=textoPantalla.toString();
+        System.out.println(textoLCD);
+        if(textoLCD.substring(0, 2).equals("1:")){
+            startActivity(new Intent(getApplicationContext(), Channels.class));
+        }else {
+            modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
+            System.out.println("modo: "+modo);
+            if(Values.ArrayModos.contains(modo)){
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        values.setValues(textoLCD, modo,RawCursor,ColCursor);
+                    }
+                });
             }
-        }).start();
+        }
     }
 
-    private void getSharedPreferences(){
-        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
-        serverAddress = SP.getString("direccion_ip", "192.168.1.1");
-        serverPort = Integer.parseInt(SP.getString("puerto","9999"));
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if(Socket_TLS.Conectado){
+            socket.Close_Socket_TLS();
+        }
     }
+
+
+    public void updateUI(){
+        if(socket.Conectado)
+            sendData(Socket_TLS.UPDATETEXT);
+    }
+
+    public void sendData(byte boton){
+        byte[] pack = Socket_TLS.pack(boton);
+        socket.Send_Socket_TLS(pack, pack.length);
+    }
+
 }

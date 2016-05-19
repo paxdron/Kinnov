@@ -8,6 +8,7 @@ import com.karumi.expandableselector.ExpandableSelector;
 import com.karumi.expandableselector.ExpandableSelectorListener;
 import com.karumi.expandableselector.OnExpandableItemClickListener;
 import com.padron.kinnov.Conexion.Socket_TLS;
+import com.padron.kinnov.events.CollapseClass;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,14 +17,19 @@ import java.util.List;
  * Created by antonio on 19/04/16.
  */
 public class Campo {
+    CollapseClass collapseClass= CollapseClass.getInstance();
+    public static final int BISELECECCION=1;
+    public static final int RANGO=2;
     String Unidad;
     List<ExpandableItem> expandableItems;
     List<ExpandableSelector> otros;
     ExpandableSelector eSelector;
     boolean expandido;
-    int MinValue;
-    int MaxValue;
     int CurrentValue;
+    int tipo;
+    int[] values;
+    private int identificador;
+    ExpandableItem chageItem;
 
     Socket_TLS socket;
     int Tipo;
@@ -33,15 +39,21 @@ public class Campo {
         setValues(unidad,values);
         expandido=false;
         this.socket=socket;
+        tipo=BISELECECCION;
     }
 
     public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista, Socket_TLS socket) {
         this.eSelector=eSelector;
         otros=lista;
-        setMinMaxValues(unidad, Min, Max);
+        Unidad=unidad;
+        CurrentValue=0;
+        eSelector.showExpandableItems(getExpandableItems());
+        setListener();
         this.socket=socket;
+        tipo=RANGO;
     }
 
+    /*
     public Campo(ExpandableSelector eSelector, String[] values, List<ExpandableSelector> lista, Socket_TLS socket) {
         this.eSelector=eSelector;
         otros=lista;
@@ -55,9 +67,11 @@ public class Campo {
         eSelector.showExpandableItems(expandableItems);
         setListener1();
         this.socket=socket;
-    }
+    }*/
 
     void setValues (String unidad,int[]values){
+        this.values=values;
+        CurrentValue=values[0];
         this.Unidad=unidad;
         eSelector.showExpandableItems(getExpandableItems(values));
         setListener1();
@@ -72,37 +86,23 @@ public class Campo {
         return expandableItems;
     }
 
-    void setMinMaxValues(String unidad,int Min, int Max){
-        Unidad=unidad;
-        CurrentValue=MinValue=Min;
-        MaxValue=Max;
-        eSelector.showExpandableItems(getExpandableItems());
-        setListener();
-    }
 
-
-    void setListener(){
+    void setListener() {
         eSelector.setOnExpandableItemClickListener(new OnExpandableItemClickListener() {
             @Override
             public void onExpandableItemClickListener(int index, View view) {
                 switch (index) {
                     case 0:
-                        if (CurrentValue > MinValue)
-                            CurrentValue--;
-                        eSelector.updateExpandableItem(1, new ExpandableItem(Integer.toString(CurrentValue)+" "+Unidad));
+                        //TODO Enviar mensaje flecha menos
                         break;
                     case 1:
                         eSelector.collapse();
                         break;
                     case 2:
-                        if (CurrentValue < MaxValue)
-                            CurrentValue++;
-                        eSelector.updateExpandableItem(1, new ExpandableItem(Integer.toString(CurrentValue)+" "+Unidad));
+                        //TODO Enviar mensaje flecha más
                         break;
                     default:
                 }
-
-                System.out.println(Integer.toString(CurrentValue));
             }
         });
 
@@ -110,23 +110,25 @@ public class Campo {
             @Override
             public void onCollapse() {
                 //Do something here
-                if(expandido) {
+                if (expandido) {
                     ExpandableItem segundo = eSelector.getExpandableItem(1);
                     eSelector.updateExpandableItem(1, eSelector.getExpandableItem(0));
                     eSelector.updateExpandableItem(0, segundo);
-                    expandido=false;
+                    expandido = false;
                 }
             }
 
             @Override
             public void onExpand() {
                 //Do something here
-                if(!expandido) {
+                if (!expandido) {
+                    Values.itemSelected=identificador;
+                    collapseClass.notifica();
                     ExpandableItem segundo = eSelector.getExpandableItem(1);
                     eSelector.updateExpandableItem(1, eSelector.getExpandableItem(0));
                     eSelector.updateExpandableItem(0, segundo);
                     collapseOthers(eSelector);
-                    expandido=true;
+                    expandido = true;
                 }
             }
 
@@ -143,6 +145,11 @@ public class Campo {
         });
     }
 
+    private void swipeFirstItem(int position, ExpandableItem clickedItem) {
+        ExpandableItem firstItem = eSelector.getExpandableItem(0);
+        eSelector.updateExpandableItem(0, clickedItem);
+        eSelector.updateExpandableItem(position, firstItem);
+    }
     void setListener1(){
         eSelector.setOnExpandableItemClickListener(new OnExpandableItemClickListener() {
             @Override public void onExpandableItemClickListener(int index, View view) {
@@ -155,20 +162,13 @@ public class Campo {
                         ExpandableItem secondItem = eSelector.getExpandableItem(2);
                         swipeFirstItem(2, secondItem);
                         break;
-                    case 3:
-                        ExpandableItem fourthItem = eSelector.getExpandableItem(3);
-                        swipeFirstItem(3, fourthItem);
-                        break;
+
                     default:
                 }
                 eSelector.collapse();
             }
 
-            private void swipeFirstItem(int position, ExpandableItem clickedItem) {
-                ExpandableItem firstItem = eSelector.getExpandableItem(0);
-                eSelector.updateExpandableItem(0, clickedItem);
-                eSelector.updateExpandableItem(position, firstItem);
-            }
+
         });
 
 
@@ -180,7 +180,8 @@ public class Campo {
 
             @Override
             public void onExpand() {
-                collapseOthers(eSelector);
+                Values.itemSelected=identificador;
+                collapseClass.notifica();
                 //Do something here
             }
 
@@ -195,6 +196,18 @@ public class Campo {
             }
 
         });
+    }
+
+    public void setCurrentValue(int newValue){
+        CurrentValue=newValue;
+        eSelector.updateExpandableItem(0, new ExpandableItem(Integer.toString(CurrentValue) + " " + Unidad));
+    }
+    public void setCurrentValue1(int newValue){
+        if(newValue!=CurrentValue){
+                CurrentValue=newValue;
+                chageItem= eSelector.getExpandableItem(1);
+                swipeFirstItem(1, chageItem);
+        }
     }
 
     public void collapseOthers(ExpandableSelector eSeleccionado){
@@ -211,6 +224,18 @@ public class Campo {
         expandableItems.add(new ExpandableItem("-"));
         expandableItems.add(new ExpandableItem("+"));
         return expandableItems;
+    }
+
+    public int getTipo() {
+        return Tipo;
+    }
+
+    public int getIdentificador() {
+        return identificador;
+    }
+
+    public void setIdentificador(int identificador) {
+        this.identificador = identificador;
     }
 }
 

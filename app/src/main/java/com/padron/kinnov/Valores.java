@@ -23,6 +23,7 @@ public class Valores{
         Modo=0;
         Frec_Carrier=Frecuencia_burst=Tiempo_Ascenso=Tiempo_Encendido=Tiempo_Bajada=Tiempo_Apagado=Tiempo_Aplicacion=1;
         Duracion_Burst=2;
+
     }
 
     public void setValues(String texto,int modo){

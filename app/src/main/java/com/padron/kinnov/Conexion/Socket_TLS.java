@@ -48,12 +48,18 @@ public class Socket_TLS {
     public static boolean Conectado=false;
     public static byte[] BUFFER;
     public static boolean Scape=false;
-    public static final byte INIT_FRAME  =   16;
-    public static final byte FINAL_FRAME =   17;
-    public static final byte DATA_LINK   =   18;
-    public static final byte COMANDO     =   31;
+    public static final byte INIT_FRAME     =   16;
+    public static final byte FINAL_FRAME    =   17;
+    public static final byte DATA_LINK      =   18;
+    public static final byte COMANDO        =   31;
     public static final byte[] COMMAND_UP ={23,25,27,29};
     public static final byte[] COMMAND_DOWN ={24,25,27,29};
+    public static final byte COMMAND_SETUP =19;
+    public static final byte COMMAND_SETDOWN =20;
+    public static final byte COMMAND_BACK =21;
+    public static final byte COMMAND_NEXT =22;
+
+    public static final byte UPDATETEXT     =   1;
     private static int indice=0;
     private static byte[] receive;
     public boolean Init_Socket_TLS(int Port, String Servidor, Context context){
@@ -121,6 +127,7 @@ public class Socket_TLS {
                 boolean receiving=false;
                 while (SocketTLS.isConnected()){
                     Temp = in.readByte();
+                    System.out.print(Temp+" ");
                     if (Temp > -1){
                         if(unpack(Temp))
                             eventos.MSGCallback();
