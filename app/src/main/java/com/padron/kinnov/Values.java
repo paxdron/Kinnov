@@ -1,9 +1,10 @@
 package com.padron.kinnov;
 
+import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Handler;
 
-import com.padron.kinnov.Conexion.Socket_TLS;
+import com.padron.kinnov.Conexion.SocketClient;
 import com.padron.kinnov.events.CollapseClass;
 import com.padron.kinnov.events.ICollapse;
 
@@ -15,7 +16,7 @@ import java.util.List;
  * Created by antonio on 12/05/16.
  */
 public class Values implements ICollapse {
-    public static int T_PULSO=200;
+    public static int T_PULSO=300;
     public static final String[] MODOS={"cont.","sinc.","rec."};
     public static final List<String> ArrayModos= Arrays.asList(MODOS);
     public static int itemSelected=0;
@@ -36,29 +37,34 @@ public class Values implements ICollapse {
     private ArrayList<Object> Elementos;
     private Campo selected;
     private int pasos=0;
-    private Socket_TLS socket;
+    private SocketClient socket;
     private byte[] BackButton;
     private byte[] NextButton;
     private Handler mHandler;
     private int times;
-    private Runnable mRunnableNext=new Runnable() {
+    private Context context;
+    Runnable mRunNext= new Runnable() {
         @Override
         public void run() {
-            System.out.println("Next "+ times);
-            sendData(NextButton);
-            if(times-->0)
-                mHandler.postDelayed(mRunnableNext,T_PULSO);
+            if(times!=0)
+            {
+                times--;
+                MainActivity.sendData(Constantes.NEXTPULSE, context);
+                mHandler.postDelayed(mRunNext, Constantes.DELAY);
+            }
         }
-    } ;
-    private Runnable mRunnableBack=new Runnable() {
+    };
+    Runnable mRunBack= new Runnable() {
         @Override
         public void run() {
-            System.out.println("Back "+ times);
-            sendData(BackButton);
-            if(times-->0)
-                mHandler.postDelayed(mRunnableBack,T_PULSO);
+            if(times!=0)
+            {
+                times--;
+                MainActivity.sendData(Constantes.BACKPULSE,context);
+                mHandler.postDelayed(mRunBack, Constantes.DELAY);
+            }
         }
-    } ;
+    };
 
 
     public Values(StimMode stim_mode,
@@ -70,7 +76,7 @@ public class Values implements ICollapse {
                   Campo decay,
                   Campo off,
                   Campo tiempo_aplicacion,
-                  Socket_TLS socket) {
+                  SocketClient socket, Context context) {
 
         this.stim_mode=stim_mode;
         this.carrier=carrier;
@@ -82,6 +88,7 @@ public class Values implements ICollapse {
         this.off=off;
         this.tiempo_aplicacion=tiempo_aplicacion;
         this.socket=socket;
+        this.context=context;
         Elementos= new ArrayList<>();
         Elementos.add(stim_mode);
         Elementos.add(carrier);
@@ -95,8 +102,6 @@ public class Values implements ICollapse {
         collapseClass=CollapseClass.getInstance();
         collapseClass.registerCallback(this);
         setIds();
-        NextButton= Socket_TLS.pack(Socket_TLS.COMMAND_NEXT);
-        BackButton= Socket_TLS.pack(Socket_TLS.COMMAND_BACK);
         mHandler= new Handler();
     }
 
@@ -155,21 +160,21 @@ public class Values implements ICollapse {
             if (Math.abs(pasos) <= Media) {
                 times=Math.abs(pasos);
                 if(pasos>0) {
-                    mHandler.postDelayed(mRunnableNext, T_PULSO);
+                    mHandler.postDelayed(mRunNext, Constantes.DELAY);
                 }
                 else
-                    mHandler.postDelayed(mRunnableBack, T_PULSO);
+                    mHandler.postDelayed(mRunBack, Constantes.DELAY);
             }
             else{
                 if(pasos>0) {
                     pasos=NumItems-pasos;
                     times=pasos;
-                    mHandler.postDelayed(mRunnableBack, 150);
+                    mHandler.postDelayed(mRunBack, Constantes.DELAY);
                 }
                 else{
                     pasos=NumItems-pasos;
                     times=pasos;
-                    mHandler.postDelayed(mRunnableNext, 150);
+                    mHandler.postDelayed(mRunNext, Constantes.DELAY);
                 }
             }
         }
@@ -216,8 +221,5 @@ public class Values implements ICollapse {
         }
     }
 
-    public void sendData(byte[] pack){
-        socket.Send_Socket_TLS(pack, pack.length);
-    }
 
 }

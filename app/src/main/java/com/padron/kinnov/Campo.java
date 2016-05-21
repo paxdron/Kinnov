@@ -1,13 +1,12 @@
 package com.padron.kinnov;
 
-import android.content.Context;
 import android.view.View;
 
 import com.karumi.expandableselector.ExpandableItem;
 import com.karumi.expandableselector.ExpandableSelector;
 import com.karumi.expandableselector.ExpandableSelectorListener;
 import com.karumi.expandableselector.OnExpandableItemClickListener;
-import com.padron.kinnov.Conexion.Socket_TLS;
+import com.padron.kinnov.Conexion.SocketClient;
 import com.padron.kinnov.events.CollapseClass;
 
 import java.util.ArrayList;
@@ -31,9 +30,9 @@ public class Campo {
     private int identificador;
     ExpandableItem chageItem;
 
-    Socket_TLS socket;
+    SocketClient socket;
     int Tipo;
-    public Campo(ExpandableSelector eSelector, String unidad, int[] values, List<ExpandableSelector> lista, Socket_TLS socket) {
+    public Campo(ExpandableSelector eSelector, String unidad, int[] values, List<ExpandableSelector> lista, SocketClient socket) {
         this.eSelector=eSelector;
         otros=lista;
         setValues(unidad,values);
@@ -42,7 +41,7 @@ public class Campo {
         tipo=BISELECECCION;
     }
 
-    public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista, Socket_TLS socket) {
+    public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista, SocketClient socket) {
         this.eSelector=eSelector;
         otros=lista;
         Unidad=unidad;
@@ -54,7 +53,7 @@ public class Campo {
     }
 
     /*
-    public Campo(ExpandableSelector eSelector, String[] values, List<ExpandableSelector> lista, Socket_TLS socket) {
+    public Campo(ExpandableSelector eSelector, String[] values, List<ExpandableSelector> lista, SocketClient socket) {
         this.eSelector=eSelector;
         otros=lista;
         expandableItems= new ArrayList<>();
@@ -94,11 +93,13 @@ public class Campo {
                 switch (index) {
                     case 0:
                         //TODO Enviar mensaje flecha menos
+                        MainActivity.sendData(Constantes.DOWNPULSE,MainActivity.context);
                         break;
                     case 1:
                         eSelector.collapse();
                         break;
                     case 2:
+                        MainActivity.sendData(Constantes.UP_PULSE,MainActivity.context);
                         //TODO Enviar mensaje flecha más
                         break;
                     default:
@@ -155,12 +156,7 @@ public class Campo {
             @Override public void onExpandableItemClickListener(int index, View view) {
                 switch (index) {
                     case 1:
-                        ExpandableItem firstItem = eSelector.getExpandableItem(1);
-                        swipeFirstItem(1, firstItem);
-                        break;
-                    case 2:
-                        ExpandableItem secondItem = eSelector.getExpandableItem(2);
-                        swipeFirstItem(2, secondItem);
+                        MainActivity.sendData(Constantes.DOWNPULSE,MainActivity.context);
                         break;
 
                     default:
@@ -200,7 +196,10 @@ public class Campo {
 
     public void setCurrentValue(int newValue){
         CurrentValue=newValue;
-        eSelector.updateExpandableItem(0, new ExpandableItem(Integer.toString(CurrentValue) + " " + Unidad));
+        if(!expandido)
+            eSelector.updateExpandableItem(0, new ExpandableItem(Integer.toString(CurrentValue) + " " + Unidad));
+        else
+            eSelector.updateExpandableItem(1, new ExpandableItem(Integer.toString(CurrentValue) + " " + Unidad));
     }
     public void setCurrentValue1(int newValue){
         if(newValue!=CurrentValue){

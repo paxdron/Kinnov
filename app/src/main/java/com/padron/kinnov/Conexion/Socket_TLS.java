@@ -2,24 +2,13 @@ package com.padron.kinnov.Conexion;
 
 import android.content.Context;
 
-import com.padron.kinnov.ClaseEventos;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 
 import java.net.Socket;
-import java.security.KeyStore;
-import java.util.ArrayList;
-
-import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocket;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManagerFactory;
 
 /**
  * Created by jcpineda on 21/04/2016.
@@ -120,7 +109,6 @@ public class Socket_TLS {
         public void run() {
             byte Temp;
             try {
-                ClaseEventos eventos= ClaseEventos.getInstance();
                 InputStream inServer = SocketTLS.getInputStream();
                 DataInputStream in = new DataInputStream(inServer);
                 receive= new byte[50];
@@ -128,10 +116,10 @@ public class Socket_TLS {
                 while (SocketTLS.isConnected()){
                     Temp = in.readByte();
                     System.out.print(Temp+" ");
-                    if (Temp > -1){
+                    /*if (Temp > -1){
                         if(unpack(Temp))
-                            eventos.MSGCallback();
-                    }
+
+                    }*/
                 }
             } catch (IOException e) {
                 e.printStackTrace();

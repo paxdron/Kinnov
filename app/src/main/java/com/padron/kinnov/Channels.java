@@ -3,25 +3,18 @@ package com.padron.kinnov;
 import android.graphics.Typeface;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
-import com.padron.kinnov.Conexion.Socket_TLS;
-import com.padron.kinnov.events.Event;
-import com.padron.kinnov.events.IEventHandler;
-
-import java.util.zip.Inflater;
+import com.padron.kinnov.Conexion.SocketClient;
+import com.padron.kinnov.events.ISocketListener;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
-public class Channels extends AppCompatActivity {
-    public static final byte[] COMMAND_UP ={23,25,27,29};
-    public static final byte[] COMMAND_DOWN ={24,26,28,30};
+public class Channels extends AppCompatActivity implements ISocketListener{
     FancyButton stop;
     private  Canal C1,C2,C3,C4;
-    public ClaseEventos eventosListener;
-    Socket_TLS socket;
+    SocketClient socket= new SocketClient();
     byte elemento;
     StringBuilder textoPantalla= new StringBuilder();
     byte []buffer;
@@ -35,40 +28,17 @@ public class Channels extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_channels);
-        socket=new Socket_TLS();
+        SocketClient.socketListener.registerCallback(this);
         stop=(FancyButton)findViewById(R.id.fabStop);
         stop.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                byte[]pack=Socket_TLS.pack((byte)17);
-                socket.Send_Socket_TLS(pack,pack.length);
+                MainActivity.sendData(Constantes.STARTSTOP, getBaseContext());
                 Channels.this.finish();
             }
         });
+
         canales= new Canales();
-        eventosListener=ClaseEventos.getInstance();
-        eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
-            @Override
-            public void callback(Event event) {
-                buffer=Socket_TLS.BUFFER;
-                i=1;
-                textoPantalla.setLength(0);
-                elemento=buffer[i++];
-                while(elemento!=2){
-                    textoPantalla.append((char)elemento);
-                    elemento=buffer[i++];
-                }
-                textoLCD=textoPantalla.toString();
-                if(textoLCD.substring(0, 2).equals("1:")){
-                    canales.setValues(textoLCD);
-                }else {
-                    modo=textoLCD.substring(0,5).replaceAll("\\s+","");
-                    if(Values.ArrayModos.contains(modo)){
-                        Channels.this.finish();
-                    }
-                }
-            }
-        });
 
         C1= new Canal(0,
                 (FancyButton)findViewById(R.id.btn_upCh1),
@@ -101,6 +71,37 @@ public class Channels extends AppCompatActivity {
         stop.getTextViewObject().setTypeface(custom_font);
     }
 
+    @Override
+    public void OnNewMessage() {
+        buffer=SocketClient.BUFFER;
+        i=1;
+        textoPantalla.setLength(0);
+        elemento=buffer[i++];
+        while(elemento!=2){
+            textoPantalla.append((char)elemento);
+            elemento=buffer[i++];
+        }
+        textoLCD=textoPantalla.toString();
+        if(textoLCD.substring(0, 2).equals("1:")){
+            canales.setValues(textoLCD);
+        }else {
+            modo=textoLCD.substring(0,5).replaceAll("\\s+","");
+            if(Values.ArrayModos.contains(modo)){
+                Channels.this.finish();
+            }
+        }
+    }
+
+    @Override
+    public void OnDisconnectedSocket() {
+
+    }
+
+    @Override
+    public void OnTimeOut() {
+
+    }
+
     public class Canal{
 
         private int CurrentValue;
@@ -129,10 +130,10 @@ public class Channels extends AppCompatActivity {
         }
 
         void Incrementar(){
-            sendData(COMMAND_UP[noChanel]);
+            sendData(Constantes.COMMAND_UP[noChanel]);
         }
         void Decrementar(){
-            sendData(COMMAND_DOWN[noChanel]);
+            sendData(Constantes.COMMAND_DOWN[noChanel]);
         }
 
         public void setIncrementar() {
@@ -155,8 +156,8 @@ public class Channels extends AppCompatActivity {
         }
 
         public void sendData(byte boton){
-            byte[] pack = Socket_TLS.pack(boton);
-            socket.Send_Socket_TLS(pack, pack.length);
+            byte[] pack = SocketClient.pack(boton);
+            MainActivity.sendData(pack, getApplicationContext());
         }
     }
 

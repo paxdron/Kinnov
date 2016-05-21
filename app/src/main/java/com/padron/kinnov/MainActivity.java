@@ -1,46 +1,46 @@
 package com.padron.kinnov;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.preference.PreferenceManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.karumi.expandableselector.ExpandableItem;
+import com.androidadvance.topsnackbar.TSnackbar;
 import com.karumi.expandableselector.ExpandableSelector;
-
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
-import com.padron.kinnov.Conexion.Socket_TLS;
-import com.padron.kinnov.events.Event;
-import com.padron.kinnov.events.IEventHandler;
+import com.padron.kinnov.Conexion.SocketClient;
+import com.padron.kinnov.events.ISocketListener;
+import com.padron.kinnov.exceptions.ServerNotFound;
+import com.padron.kinnov.exceptions.SocketClosed;
 
 import mehdi.sakout.fancybuttons.FancyButton;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements ISocketListener {
     private List<ExpandableSelector> eSelectors;
     private FancyButton start;
     private Typeface custom_font;
-
+    public static Context context;
     private FancyButton modo1,modo2,modo3;
     private String[] modosLabels;
     private FancyButton[] modosBtns;
     private LinearLayout layouttAscenso, layouttEncendido, layouttBajada, layouttReposo;
-    public ClaseEventos eventosListener;
-    public Socket_TLS socket;
+    final SocketClient socketClient= new SocketClient();
     byte elemento;
     StringBuilder textoPantalla= new StringBuilder();
     byte []buffer;
@@ -48,24 +48,48 @@ public class MainActivity extends AppCompatActivity {
     private String textoLCD;
     private String modo;
     private int ColCursor, RawCursor;
-    StimMode stimMode;
-    Values values;
+    private StimMode stimMode;
+    private Values values;
+    private TSnackbar TSBFail;
+    private TSnackbar TSBConnect;
+    private String serverAddress;
+    private int serverPort;
+    private Handler mhandlerConn;
+    private Handler mhandlerSendData;
+    private boolean secondActivity;
+    Runnable mRunnableFailed= new Runnable() {
+        @Override
+        public void run() {
+            TSBFail.show();
+        }
+    };
+    Runnable mRunnableAuto= new Runnable() {
+        @Override
+        public void run() {
+            TSBConnect.show();
+            ConnectServer();
+        }
+    };
+    Runnable mRunnableConn= new Runnable() {
+        @Override
+        public void run() {
+            TSBConnect.dismiss();TSBFail.dismiss();
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        context=getApplicationContext();
+        Snackbar();
+        getSharedPreferences();
+        SocketClient.socketListener.registerCallback(this);
         eSelectors= new ArrayList<>();
         initializeUI();
         modoEstimulacion();
         initializeExpandableSelector();
         textoPantalla= new StringBuilder();
-        eventosListener=ClaseEventos.getInstance();
-        eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
-            @Override
-            public void callback(Event event) {
-                parseMessage();
-            }
-        });
         start.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,10 +98,13 @@ public class MainActivity extends AppCompatActivity {
                 if (Values.ArrayModos.contains(modo)) {
                     values.setValues(texto, modo);
                 }*/
-                byte[] pack = Socket_TLS.pack((byte) 17);
-                socket.Send_Socket_TLS(pack, pack.length);
+                sendData(Constantes.STARTSTOP, getApplicationContext());
             }
         });
+        mhandlerConn= new Handler();
+        mhandlerSendData= new Handler();
+        TSBConnect.show();
+        ConnectServer();
     }
 
     @Override
@@ -88,31 +115,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void initializeExpandableSelector() {
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_carrier));
-        Campo campCarrier=new Campo(eSelectors.get(0),getString(R.string.khz), new int[]{1, 4},eSelectors,socket);
+        Campo campCarrier=new Campo(eSelectors.get(0),getString(R.string.khz), new int[]{1, 4},eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_duartion_burst));
-        Campo campDurationBurst=new Campo(eSelectors.get(1),getString(R.string.ms), new int[]{2, 4},eSelectors,socket);
+        Campo campDurationBurst=new Campo(eSelectors.get(1),getString(R.string.ms), new int[]{2, 4},eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_freq_burst));
-        Campo campFreqBurst = new Campo(eSelectors.get(2), getString(R.string.hz), 1,120,eSelectors,socket);
+        Campo campFreqBurst = new Campo(eSelectors.get(2), getString(R.string.hz), 1,120,eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tAscenso));
-        Campo campRise = new Campo(eSelectors.get(3), getString(R.string.s), 1,20,eSelectors,socket);
+        Campo campRise = new Campo(eSelectors.get(3), getString(R.string.s), 1,20,eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tEncendido));
-        Campo campOn = new Campo(eSelectors.get(4), getString(R.string.s), 1,60,eSelectors,socket);
+        Campo campOn = new Campo(eSelectors.get(4), getString(R.string.s), 1,60,eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tBajada));
-        Campo campDecay = new Campo(eSelectors.get(5), getString(R.string.s), 1,20,eSelectors,socket);
+        Campo campDecay = new Campo(eSelectors.get(5), getString(R.string.s), 1,20,eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tReposo));
-        Campo campOff = new Campo(eSelectors.get(6), getString(R.string.s), 1,60,eSelectors,socket);
+        Campo campOff = new Campo(eSelectors.get(6), getString(R.string.s), 1,60,eSelectors,socketClient);
 
         eSelectors.add((ExpandableSelector) findViewById(R.id.es_tAplicacion));
-        Campo campAplication=new Campo(eSelectors.get(7),getString(R.string.m), 1,60,eSelectors,socket);
+        Campo campAplication=new Campo(eSelectors.get(7),getString(R.string.m), 1,60,eSelectors,socketClient);
         /*eSelectors.add((ExpandableSelector) findViewById(R.id.es_modoEstim));
         Campo campSimmMode = new Campo(eSelectors.get(8),getResources().getStringArray(R.array.stimm_mode),eSelectors);*/
-        values= new Values(stimMode,campCarrier,campDurationBurst,campFreqBurst,campRise,campOn,campDecay,campOff,campAplication,socket);
+        values= new Values(stimMode,campCarrier,campDurationBurst,campFreqBurst,campRise,campOn,campDecay,campOff,campAplication,socketClient,getBaseContext());
     }
 
 
@@ -130,6 +157,50 @@ public class MainActivity extends AppCompatActivity {
             fB.getTextViewObject().setTypeface(custom_font);
         }*/
 
+    }
+
+    public void Snackbar(){
+        TSBFail= TSnackbar
+                .make(findViewById(android.R.id.content), "No se pudo establecer la conexión con el servidor", TSnackbar.LENGTH_INDEFINITE)
+                .setAction("Reintenta", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        ConnectServer();
+                    }
+                });
+        TSBFail.setActionTextColor(Color.WHITE);
+        TSBConnect=TSnackbar.make(findViewById(android.R.id.content), "Connectando...", TSnackbar.LENGTH_INDEFINITE);
+        //snackbar.addIcon(R.mipmap.ic_core, 200);
+        View snackbarView = TSBFail.getView();
+        snackbarView.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        TextView textView = (TextView) snackbarView.findViewById(com.androidadvance.topsnackbar.R.id.snackbar_text);
+        textView.setTextColor(Color.WHITE);
+        View snackbarView2 = TSBConnect.getView();
+        snackbarView2.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
+        TextView textView2 = (TextView) snackbarView2.findViewById(com.androidadvance.topsnackbar.R.id.snackbar_text);
+        textView2.setTextColor(Color.WHITE);
+    }
+
+    private void getSharedPreferences(){
+        SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
+        serverAddress = SP.getString("direccion_ip", "192.168.1.1");
+        serverPort = Integer.parseInt(SP.getString("puerto", "9999"));
+        SocketClient.setServerArgs(serverAddress,serverPort);
+    }
+    private void ConnectServer(){
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    socketClient.getSocket();
+                    mhandlerConn.post(mRunnableConn);
+                } catch (ServerNotFound serverNotFound) {
+                    serverNotFound.printStackTrace();
+                    mhandlerConn.post(mRunnableFailed);
+                }
+
+            }
+        }).start();
     }
 
     private void initializeUI(){
@@ -184,34 +255,31 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        if(!Socket_TLS.Conectado){
-            updateUI();
-        }
-        eventosListener.addEventListener(Event.MSGRCV, new IEventHandler() {
-            @Override
-            public void callback(Event event) {
-                parseMessage();
-            }
-        });
+        secondActivity=false;
+        //if(!SocketClient.isConnected()){
+
+          //  updateUI();
+        //}
+
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        eventosListener.removeEventListener(Event.MSGRCV);
+        //eventosListener.removeEventListener(Event.MSGRCV);
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-        if(!Socket_TLS.Conectado){
+        if(!SocketClient.isConnected()){
             updateUI();
         }
 
     }
 
     public void parseMessage(){
-        buffer=Socket_TLS.BUFFER;
+        buffer=SocketClient.BUFFER;
         i=1;
         textoPantalla.setLength(0);
         elemento=buffer[i++];
@@ -228,10 +296,11 @@ public class MainActivity extends AppCompatActivity {
         textoLCD=textoPantalla.toString();
         System.out.println(textoLCD);
         if(textoLCD.substring(0, 2).equals("1:")){
+            secondActivity=true;
             startActivity(new Intent(getApplicationContext(), Channels.class));
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
-            System.out.println("modo: "+modo);
+            System.out.println("modo: " + modo);
             if(Values.ArrayModos.contains(modo)){
                 runOnUiThread(new Runnable() {
                     @Override
@@ -246,20 +315,41 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if(Socket_TLS.Conectado){
-            socket.Close_Socket_TLS();
+        if(SocketClient.isConnected()){
+            socketClient.Desconectar();
         }
     }
 
 
     public void updateUI(){
-        if(socket.Conectado)
-            sendData(Socket_TLS.UPDATETEXT);
+        //if(SocketClient.isConnected())
+            //sendData();
     }
 
-    public void sendData(byte boton){
-        byte[] pack = Socket_TLS.pack(boton);
-        socket.Send_Socket_TLS(pack, pack.length);
+
+    @Override
+    public void OnNewMessage() {
+        if(!secondActivity)
+            parseMessage();
     }
 
+    @Override
+    public void OnDisconnectedSocket() {
+        mhandlerConn.post(mRunnableAuto);
+    }
+
+    @Override
+    public void OnTimeOut() {
+
+    }
+
+
+
+    public static void sendData(byte[] pack,Context context){
+        try {
+            SocketClient.Send_Socket_TLS(pack, pack.length);
+        } catch (SocketClosed socketClosed) {
+            Toast.makeText(context, "Socket no iniciado", Toast.LENGTH_SHORT).show();
+        }
+    }
 }

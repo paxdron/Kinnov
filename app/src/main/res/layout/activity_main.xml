@@ -17,6 +17,7 @@
         android:id="@+id/myToolbar"
         layout="@layout/toolbar"
         />
+
     <mehdi.sakout.fancybuttons.FancyButton
         android:id="@+id/fabStart"
         android:layout_width="wrap_content"
