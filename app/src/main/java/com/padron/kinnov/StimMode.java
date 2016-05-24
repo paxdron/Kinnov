@@ -17,10 +17,15 @@ public class StimMode {
     FancyButton modo1,modo2,modo3;
     private int modSelected;
     private boolean isExpanded;
+    public static boolean keepShowing=false;
     private FancyButton[] modosBtns;
     private String[] modosLabels;
     private int identificador;
     private LinearLayout[] layouts;
+    private int pasos;
+    private int times;
+    private int media=1;
+    private int NumItems=3;
 
     public StimMode(FancyButton[] modosBtns, String[] modosLabels, LinearLayout[] layouts) {
         this.modosBtns = modosBtns;
@@ -39,6 +44,8 @@ public class StimMode {
         modo1.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setMode(modSelected+1,1);
+                keepShowing=false;
                 selectMode(0);
             }
         });
@@ -47,12 +54,15 @@ public class StimMode {
             public void onClick(View v) {
                 if (!isExpanded) {
                     Values.itemSelected=identificador;
+                    keepShowing=true;
                     collapseClass.notifica();
                     setTexts();
                     modo1.setVisibility(View.VISIBLE);
                     modo3.setVisibility(View.VISIBLE);
                     isExpanded = true;
                 } else {
+                    setMode(modSelected+1,2);
+                    keepShowing=false;
                     selectMode(1);
                 }
             }
@@ -60,6 +70,8 @@ public class StimMode {
         modo3.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                setMode(modSelected+1,3);
+                keepShowing = false;
                 selectMode(2);
             }
         });
@@ -75,18 +87,16 @@ public class StimMode {
         modSelected=indice;
         switch(modSelected){
             case 0:
-                Values.NumItems=5;
-                Values.Media=2;
+                Values.setItemVals(true);
                 hideLayouts();
                 break;
             default:
-                Values.NumItems=9;
-                Values.Media=4;
+                Values.setItemVals(false);
                 showAllLayouts();
                 break;
         }
-
-        Collapse();
+        if(!keepShowing)
+            Collapse();
     }
 
     private void showAllLayouts(){
@@ -132,8 +142,43 @@ public class StimMode {
         this.identificador=identificador;
     }
 
+    /**
+     * obtiene el valor del identificador
+     * @return
+     */
     public int getIdentificador(){
         return identificador;
+    }
+
+    /**
+     * Determina el puso que hay que dar para modificar el modo de estimuladion en pantalla
+     * @param currentPos el valor del modo actual
+     * @param newPos el valor del nuevo modo
+     */
+    private void setMode(int currentPos, int newPos){
+        pasos = newPos-currentPos;
+        if(pasos!=0) {
+            if (Math.abs(pasos) <= media) {
+                times=Math.abs(pasos);
+                if(pasos>0) {
+                    MainActivity.sendData(Constantes.UP_PULSE, MainActivity.context);
+                }
+                else
+                    MainActivity.sendData(Constantes.DOWNPULSE, MainActivity.context);
+            }
+            else{
+                if(pasos>0) {
+                    pasos=NumItems-pasos;
+                    times=pasos;
+                    MainActivity.sendData(Constantes.DOWNPULSE, MainActivity.context);
+                }
+                else{
+                    pasos=NumItems+pasos;
+                    times=pasos;
+                    MainActivity.sendData(Constantes.UP_PULSE, MainActivity.context);
+                }
+            }
+        }
     }
 
 }

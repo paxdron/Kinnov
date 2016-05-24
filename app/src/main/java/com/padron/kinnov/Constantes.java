@@ -12,17 +12,18 @@ public class Constantes {
     public static final byte COMANDO        =   31;
     public static final byte[] COMMAND_UP ={23,25,27,29};
     public static final byte[] COMMAND_DOWN ={24,25,27,29};
+    public static final byte GETLCD                 =   1;
     public static final byte COMMAND_SETUP          =   19;
     public static final byte COMMAND_SETDOWN        =   20;
     public static final byte COMMAND_BACK           =   21;
     public static final byte COMMAND_NEXT           =   22;
-    public static final byte UPDATETEXT             =   1;
     public static final byte COMMANDSTARTSTOP       =   17;
     public static final byte[] NEXTPULSE= SocketClient.pack(COMMAND_NEXT);
     public static final byte[] BACKPULSE= SocketClient.pack(COMMAND_BACK);
     public static final byte[] UP_PULSE= SocketClient.pack(COMMAND_SETUP);
     public static final byte[] DOWNPULSE= SocketClient.pack(COMMAND_SETDOWN);
     public static final byte[] STARTSTOP= SocketClient.pack(COMMANDSTARTSTOP);
-
-    public static final int DELAY=300;
+    public static final byte[] UPDATETEXT             =   {INIT_FRAME,GETLCD,FINAL_FRAME};
+    public static final int DELAY                     =  300;
+    public static final String[] PROTOCOLS            =    {"fort.","reedu","fesa","reduc","modd"};
 }

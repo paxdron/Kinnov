@@ -19,12 +19,14 @@ public class Values implements ICollapse {
     public static int T_PULSO=300;
     public static final String[] MODOS={"cont.","sinc.","rec."};
     public static final List<String> ArrayModos= Arrays.asList(MODOS);
+
+    private static boolean isCont=false;
     public static int itemSelected=0;
     public static int currentItem=0;
     public static int NumItems=9;
     public static int Media=4;
-
     public CollapseClass collapseClass;
+
     private StimMode stim_mode;
     private Campo carrier;
     private Campo duracion_burst;
@@ -65,8 +67,6 @@ public class Values implements ICollapse {
             }
         }
     };
-
-
     public Values(StimMode stim_mode,
                   Campo carrier,
                   Campo duracion_burst,
@@ -133,11 +133,10 @@ public class Values implements ICollapse {
         tiempo_aplicacion.setIdentificador(9);
     }
 
-
-
     @Override
     public void callbackCollapse() {
-        stim_mode.Collapse();
+        if(itemSelected!=1)
+            stim_mode.Collapse();
         posicionar();
         if(itemSelected!=1)
             if(itemSelected==2||itemSelected==3) {
@@ -153,9 +152,12 @@ public class Values implements ICollapse {
             }
     }
 
+
+
     public void posicionar(){
-        pasos = itemSelected - currentItem;
-        System.out.println(itemSelected +" "+ currentItem);
+        int iSelected=(itemSelected==9&&isCont)?5:itemSelected;
+        pasos = iSelected - currentItem;
+        System.out.println(iSelected + " " + currentItem);
         if(pasos!=0) {
             if (Math.abs(pasos) <= Media) {
                 times=Math.abs(pasos);
@@ -172,7 +174,7 @@ public class Values implements ICollapse {
                     mHandler.postDelayed(mRunBack, Constantes.DELAY);
                 }
                 else{
-                    pasos=NumItems-pasos;
+                    pasos=NumItems+pasos;
                     times=pasos;
                     mHandler.postDelayed(mRunNext, Constantes.DELAY);
                 }
@@ -213,12 +215,30 @@ public class Values implements ICollapse {
                         currentItem=8;
                         break;
                     case 15:
-                        currentItem=9;
+                        if(NumItems==9)
+                            currentItem=9;
+                        else
+                            currentItem=5;
                         break;
 
                 }
             }
         }
+    }
+
+    /**
+     * modifica los valores del numero de elementos y la media depedindo si el modo de estimulacion es continuo o no
+     * @param isCon Si el modo es continuo esta seleccionado o no
+     */
+    public static void setItemVals(boolean isCon){
+        if(isCon){
+            NumItems = 5;
+            Media = 2;
+        }else {
+            NumItems=9;
+            Media=4;
+        }
+        isCont=isCon;
     }
 
 

@@ -159,6 +159,12 @@ public class Campo {
                         MainActivity.sendData(Constantes.DOWNPULSE,MainActivity.context);
                         break;
 
+
+
+
+
+
+
                     default:
                 }
                 eSelector.collapse();

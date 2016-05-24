@@ -74,6 +74,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         @Override
         public void run() {
             TSBConnect.dismiss();TSBFail.dismiss();
+            sendData(Constantes.UPDATETEXT,MainActivity.context);
         }
     };
 
@@ -84,7 +85,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         context=getApplicationContext();
         Snackbar();
         getSharedPreferences();
-        SocketClient.socketListener.registerCallback(this);
         eSelectors= new ArrayList<>();
         initializeUI();
         modoEstimulacion();
@@ -256,6 +256,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     protected void onResume() {
         super.onResume();
         secondActivity=false;
+        SocketClient.socketListener.registerCallback(this);
         //if(!SocketClient.isConnected()){
 
           //  updateUI();
@@ -300,7 +301,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
             startActivity(new Intent(getApplicationContext(), Channels.class));
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
-            System.out.println("modo: " + modo);
             if(Values.ArrayModos.contains(modo)){
                 runOnUiThread(new Runnable() {
                     @Override
@@ -308,6 +308,9 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                         values.setValues(textoLCD, modo,RawCursor,ColCursor);
                     }
                 });
+            }
+            else{
+
             }
         }
     }
@@ -329,7 +332,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
 
     @Override
     public void OnNewMessage() {
-        if(!secondActivity)
             parseMessage();
     }
 

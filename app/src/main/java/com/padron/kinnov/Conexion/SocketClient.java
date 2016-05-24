@@ -95,7 +95,6 @@ public class SocketClient {
 
                 while (Socket.isConnected()){
                     Temp = in.readByte();
-                    System.out.print(Temp+" ");
                     if (Temp > -1){
                         if(unpack(Temp)){
                             socketListener.newMessage();
