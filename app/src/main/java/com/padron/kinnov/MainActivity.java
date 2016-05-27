@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,7 +35,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 public class MainActivity extends AppCompatActivity implements ISocketListener {
     private List<ExpandableSelector> eSelectors;
     private FancyButton start;
-    private Typeface custom_font;
+    public static Typeface custom_font;
     public static Context context;
     private FancyButton modo1,modo2,modo3;
     private String[] modosLabels;
@@ -50,8 +51,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     private int ColCursor, RawCursor;
     private StimMode stimMode;
     private Values values;
-    private TSnackbar TSBFail;
-    private TSnackbar TSBConnect;
+    private TSNCKBR SnackBar;
     private String serverAddress;
     private int serverPort;
     private Handler mhandlerConn;
@@ -60,30 +60,33 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     Runnable mRunnableFailed= new Runnable() {
         @Override
         public void run() {
-            TSBFail.show();
+            SnackBar.show();
+            SnackBar.Retry();
         }
     };
     Runnable mRunnableAuto= new Runnable() {
         @Override
         public void run() {
-            TSBConnect.show();
+            SnackBar.show();
+            SnackBar.Conectando();
             ConnectServer();
         }
     };
     Runnable mRunnableConn= new Runnable() {
         @Override
         public void run() {
-            TSBConnect.dismiss();TSBFail.dismiss();
+            SnackBar.dismiss();
             sendData(Constantes.UPDATETEXT,MainActivity.context);
         }
     };
+    private FancyButton progmenu;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=getApplicationContext();
-        Snackbar();
+        SnackBar=new TSNCKBR((TextView) findViewById(R.id.message),(Button) findViewById(R.id.retry),(LinearLayout)findViewById(R.id.Tsnackbar));
         getSharedPreferences();
         eSelectors= new ArrayList<>();
         initializeUI();
@@ -101,16 +104,23 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 sendData(Constantes.STARTSTOP, getApplicationContext());
             }
         });
+
+        progmenu.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                sendData(Constantes.PROGMENU, getApplicationContext());
+            }
+        });
         mhandlerConn= new Handler();
         mhandlerSendData= new Handler();
-        TSBConnect.show();
+        SnackBar.show();
+        SnackBar.Conectando();
         ConnectServer();
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        updateUI();
     }
 
     private void initializeExpandableSelector() {
@@ -158,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         }*/
 
     }
-
+/*
     public void Snackbar(){
         TSBFail= TSnackbar
                 .make(findViewById(android.R.id.content), "No se pudo establecer la conexión con el servidor", TSnackbar.LENGTH_INDEFINITE)
@@ -179,13 +189,13 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         snackbarView2.setBackgroundColor(ContextCompat.getColor(this, R.color.colorPrimaryDark));
         TextView textView2 = (TextView) snackbarView2.findViewById(com.androidadvance.topsnackbar.R.id.snackbar_text);
         textView2.setTextColor(Color.WHITE);
-    }
+    }*/
 
     private void getSharedPreferences(){
         SharedPreferences SP = PreferenceManager.getDefaultSharedPreferences(getBaseContext());
         serverAddress = SP.getString("direccion_ip", "192.168.1.1");
-        serverPort = Integer.parseInt(SP.getString("puerto", "9999"));
-        SocketClient.setServerArgs(serverAddress,serverPort);
+        serverPort = Integer.parseInt(SP.getString("puerto", "5001"));
+        SocketClient.setServerArgs(serverAddress, serverPort);
     }
     private void ConnectServer(){
         new Thread(new Runnable() {
@@ -218,7 +228,9 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         layouttBajada=(LinearLayout)findViewById(R.id.layouttBajada);
         layouttReposo=(LinearLayout)findViewById(R.id.layouttReposo);
         start = (FancyButton) findViewById(R.id.fabStart);
+        progmenu = (FancyButton) findViewById(R.id.fabProgMenu);
         start.getTextViewObject().setTypeface(custom_font);
+        progmenu.getTextViewObject().setTypeface(custom_font);
         Toolbar toolbar =(Toolbar)findViewById(R.id.myToolbar);
         toolbar.setTitle("");
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
@@ -257,10 +269,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         super.onResume();
         secondActivity=false;
         SocketClient.socketListener.registerCallback(this);
-        //if(!SocketClient.isConnected()){
-
-          //  updateUI();
-        //}
+        if(SocketClient.isConnected())
+            sendData(Constantes.UPDATETEXT,MainActivity.context);
 
     }
 
@@ -274,7 +284,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     protected void onRestart() {
         super.onRestart();
         if(!SocketClient.isConnected()){
-            updateUI();
         }
 
     }
@@ -301,6 +310,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
             startActivity(new Intent(getApplicationContext(), Channels.class));
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
+            System.out.println(modo);
             if(Values.ArrayModos.contains(modo)){
                 runOnUiThread(new Runnable() {
                     @Override
@@ -310,7 +320,9 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 });
             }
             else{
-
+                if((Constantes.PROTOCOLS.contains(modo))){
+                    startActivity(new Intent(getApplicationContext(), MenuMaquina.class));
+                }
             }
         }
     }
@@ -321,12 +333,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         if(SocketClient.isConnected()){
             socketClient.Desconectar();
         }
-    }
-
-
-    public void updateUI(){
-        //if(SocketClient.isConnected())
-            //sendData();
     }
 
 
@@ -345,13 +351,46 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
 
     }
 
-
-
     public static void sendData(byte[] pack,Context context){
         try {
             SocketClient.Send_Socket_TLS(pack, pack.length);
         } catch (SocketClosed socketClosed) {
             Toast.makeText(context, "Socket no iniciado", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public class TSNCKBR{
+        private TextView message;
+        private Button retry;
+        private LinearLayout llSB;
+        public TSNCKBR(TextView message, Button retry, LinearLayout llSB) {
+            this.message = message;
+            this.retry = retry;
+            this.llSB=llSB;
+            message.setTextColor(Color.WHITE);
+            retry.setTextColor(Color.WHITE);
+            retry.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                }
+            });
+        }
+        public void show(){
+            llSB.setVisibility(View.VISIBLE);
+        }
+        public void dismiss(){
+            llSB.setVisibility(View.GONE);
+        }
+        public void Retry(){
+            retry.setVisibility(View.VISIBLE);
+            message.setText("No se pudo establecer la conexión con el servidor");
+            ConnectServer();
+        }
+
+        public void Conectando(){
+            message.setText("Connectando...");
+            retry.setVisibility(View.GONE);
         }
     }
 }

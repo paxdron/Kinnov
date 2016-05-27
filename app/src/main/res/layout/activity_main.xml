@@ -17,29 +17,82 @@
         android:id="@+id/myToolbar"
         layout="@layout/toolbar"
         />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/colorPrimaryDark"
+        android:layout_below="@id/myToolbar"
+        android:orientation="horizontal"
+        android:paddingRight="20dp"
+        android:paddingLeft="20dp"
+        android:id="@+id/Tsnackbar"
+        >
+        <TextView
+            android:id="@+id/message"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            />
+        <Button
+            android:id="@+id/retry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="REINTENTA"
+            android:textColor="@color/colorWhite"
+            android:layout_gravity="center_vertical"
+            android:backgroundTint="@color/colorTransparent"
+            />
+    </LinearLayout>
 
-    <mehdi.sakout.fancybuttons.FancyButton
-        android:id="@+id/fabStart"
-        android:layout_width="wrap_content"
-        android:layout_height="@dimen/footerHeight"
-        android:layout_marginBottom="@dimen/footer_fab_margin"
-        android:padding="12dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:weightSum="1"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"
-        fancy:fb_defaultColor="@color/colorAccent"
-        fancy:fb_focusColor="@color/colorAccentDark"
-        fancy:fb_iconResource="@drawable/play"
-        fancy:fb_iconPosition="right"
-        fancy:fb_radius="64dp"
-        fancy:fb_text="Iniciar"
-        fancy:fb_textColor="#FFFFFF"
-        fancy:fb_textSize="20sp"
-        />
+        android:orientation="horizontal"
+        >
+
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/fabProgMenu"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/footerHeight"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="@dimen/footer_fab_margin"
+            android:padding="12dp"
+            fancy:fb_defaultColor="@color/colorAccent"
+            fancy:fb_focusColor="@color/colorAccentDark"
+            fancy:fb_radius="64dp"
+            fancy:fb_text="PROG/MENU"
+            fancy:fb_textColor="#FFFFFF"
+            fancy:fb_textSize="20sp"
+            />
+        <mehdi.sakout.fancybuttons.FancyButton
+            android:id="@+id/fabStart"
+            android:layout_width="0dp"
+            android:layout_height="@dimen/footerHeight"
+            android:layout_weight="0.5"
+            android:layout_marginLeft="5dp"
+            android:layout_marginBottom="@dimen/footer_fab_margin"
+            android:padding="12dp"
+            fancy:fb_defaultColor="@color/colorAccent"
+            fancy:fb_focusColor="@color/colorAccentDark"
+            fancy:fb_iconResource="@drawable/play"
+            fancy:fb_iconPosition="right"
+            fancy:fb_radius="64dp"
+            fancy:fb_text="Iniciar"
+            fancy:fb_textColor="#FFFFFF"
+            fancy:fb_textSize="20sp"
+            />
+    </LinearLayout>
     <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@id/footer"
-        android:layout_below="@id/myToolbar"
+        android:layout_below="@id/Tsnackbar"
         >
     <RelativeLayout
         android:layout_width="wrap_content"
@@ -320,7 +373,5 @@
         </RelativeLayout>
 
     </ScrollView>
-
-
 
 </RelativeLayout>

@@ -34,7 +34,6 @@ public class Channels extends AppCompatActivity implements ISocketListener{
             @Override
             public void onClick(View v) {
                 MainActivity.sendData(Constantes.STARTSTOP, getBaseContext());
-                Channels.this.finish();
             }
         });
 
@@ -82,14 +81,25 @@ public class Channels extends AppCompatActivity implements ISocketListener{
             elemento=buffer[i++];
         }
         textoLCD=textoPantalla.toString();
+        System.out.println(textoLCD);
         if(textoLCD.substring(0, 2).equals("1:")){
             canales.setValues(textoLCD);
         }else {
-            modo=textoLCD.substring(0,5).replaceAll("\\s+","");
+            modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
             if(Values.ArrayModos.contains(modo)){
                 Channels.this.finish();
             }
+            else{
+                MainActivity.sendData(Constantes.STARTSTOP,getApplicationContext());
+            }
         }
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if(SocketClient.isConnected())
+            MainActivity.sendData(Constantes.UPDATETEXT,MainActivity.context);
     }
 
     @Override
