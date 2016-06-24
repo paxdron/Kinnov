@@ -14,7 +14,7 @@ public class Constantes {
     public static final byte DATA_LINK      =   18;
     public static final byte COMANDO        =   31;
     public static final byte[] COMMAND_UP ={23,25,27,29};
-    public static final byte[] COMMAND_DOWN ={24,25,27,29};
+    public static final byte[] COMMAND_DOWN ={24,26,28,30};
     public static final byte GETLCD                 =   1;
     public static final byte COMMAND_SETUP          =   19;
     public static final byte COMMAND_SETDOWN        =   20;
@@ -35,6 +35,7 @@ public class Constantes {
     public static final int NUMPROTOCOLS              =     7;
     public static final int MEDIAPROTOCOLS            =     3;
     public static final byte[] NCOMMAND_UP ={23,25,27,29};
-
+    public static final int POSLEDBYTE                =     37;
+    public static final byte[] MASKS ={1,2,4,8};
 
 }

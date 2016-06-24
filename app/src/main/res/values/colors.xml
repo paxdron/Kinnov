@@ -13,4 +13,14 @@
     <color name="colorWhite">#FFFFFFFF</color>
     <color name="colorGray">#FF929292</color>
     <color name="colorTransparent">#00FFFFFF</color>
+
+    <color name="ch1">#FF5722</color>
+    <color name="ch1Dark">#E64A19</color>
+    <color name="ch2">#616161</color>
+    <color name="ch2Dark">#455A64</color>
+    <color name="ch3">#2196F3</color>
+    <color name="ch3Dark">#1976D2</color>
+    <color name="ch4">#4CAF50</color>
+    <color name="ch4Dark">#388E3C</color>
+    <color name="led_color">#FF9800</color>
 </resources>

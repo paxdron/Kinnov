@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class Values implements ICollapse {
     public static int T_PULSO=300;
-    public static final String[] MODOS={"cont.","sinc.","rec."};
+    public static final String[] MODOS={"cont.","sync","rec."};
     public static final List<String> ArrayModos= Arrays.asList(MODOS);
 
     private static boolean isCont=false;

@@ -1,8 +1,13 @@
 package com.padron.kinnov;
 
+import android.content.Context;
 import android.graphics.Typeface;
+import android.os.Handler;
+import android.support.annotation.UiThread;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -23,7 +28,20 @@ public class Channels extends AppCompatActivity implements ISocketListener{
     private String textoLCD;
     private String modo;
     private static Canal[] canalesUI;
-
+    private byte leds;
+    private Handler mLEDHandler;
+    private Runnable mRunLeds= new Runnable() {
+        @Override
+        public void run() {
+            for(int i=0;i<4;i++) {
+                if ((leds & Constantes.MASKS[i]) == Constantes.MASKS[i]) {
+                    canalesUI[i].tvTitle.setTextColor(ContextCompat.getColor(getApplication(), R.color.led_color));
+                } else {
+                    canalesUI[i].tvTitle.setTextColor(ContextCompat.getColor(getApplication(), R.color.colorPrimaryDark));
+                }
+            }
+        }
+    };
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,25 +54,33 @@ public class Channels extends AppCompatActivity implements ISocketListener{
                 MainActivity.sendData(Constantes.STARTSTOP, getBaseContext());
             }
         });
-
+        mLEDHandler= new Handler();
         canales= new Canales();
 
         C1= new Canal(0,
                 (FancyButton)findViewById(R.id.btn_upCh1),
                 (FancyButton)findViewById(R.id.btn_downCh1),
-                (TextView)findViewById(R.id.tvCanal1Value));
+                (TextView)findViewById(R.id.tvCanal1Value),
+                (TextView)findViewById(R.id.tvTituloC1)
+                );
         C2= new Canal(1,
                 (FancyButton)findViewById(R.id.btn_upCh2),
                 (FancyButton)findViewById(R.id.btn_downCh2),
-                (TextView)findViewById(R.id.tvCanal2Value));
+                (TextView)findViewById(R.id.tvCanal2Value),
+                (TextView)findViewById(R.id.tvTituloC2)
+                );
         C3= new Canal(2,
                 (FancyButton)findViewById(R.id.btn_upCh3),
                 (FancyButton)findViewById(R.id.btn_downCh3),
-                (TextView)findViewById(R.id.tvCanal3Value));
+                (TextView)findViewById(R.id.tvCanal3Value),
+                (TextView)findViewById(R.id.tvTituloC3)
+                );
         C4= new Canal(3,
                 (FancyButton)findViewById(R.id.btn_upCh4),
                 (FancyButton)findViewById(R.id.btn_downCh4),
-                (TextView)findViewById(R.id.tvCanal4Value));
+                (TextView)findViewById(R.id.tvCanal4Value),
+                (TextView)findViewById(R.id.tvTituloC4)
+                );
         canalesUI=new Canal[]{C1,C2,C3,C4};
 
         Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
@@ -75,6 +101,7 @@ public class Channels extends AppCompatActivity implements ISocketListener{
         buffer=SocketClient.BUFFER;
         i=1;
         textoPantalla.setLength(0);
+        leds=buffer[Constantes.POSLEDBYTE];
         elemento=buffer[i++];
         while(elemento!=2){
             textoPantalla.append((char)elemento);
@@ -84,8 +111,10 @@ public class Channels extends AppCompatActivity implements ISocketListener{
         System.out.println(textoLCD);
         if(textoLCD.substring(0, 2).equals("1:")){
             canales.setValues(textoLCD);
+            mLEDHandler.post(mRunLeds);
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
+            Log.i("Modo: ", modo);
             if(Values.ArrayModos.contains(modo)){
                 Channels.this.finish();
             }
@@ -116,14 +145,15 @@ public class Channels extends AppCompatActivity implements ISocketListener{
 
         private int CurrentValue;
         FancyButton Incrementar, Decrementar;
-        TextView tvValue;
+        TextView tvValue,tvTitle;
         int noChanel;
-        public Canal(int noChanel,FancyButton incrementar, FancyButton decrementar, TextView tvValue) {
+        public Canal(int noChanel,FancyButton incrementar, FancyButton decrementar, TextView tvValue,TextView tvTitle) {
             this.noChanel=noChanel;
             CurrentValue=0;
             Incrementar=incrementar;
             Decrementar=decrementar;
             this.tvValue=tvValue;
+            this.tvTitle=tvTitle;
             setIncrementar();
             setDecrementar();
         }
@@ -171,11 +201,11 @@ public class Channels extends AppCompatActivity implements ISocketListener{
         }
     }
 
-    static class Canales{
+    class Canales{
         private int Canal1;
         private int Canal2;
         private int Canal3;
-
+        private int Canal4;
         public void setCanal1(int canal1) {
             Canal1 = canal1;
             canalesUI[0].setCurrentValue(canal1);
@@ -196,7 +226,6 @@ public class Channels extends AppCompatActivity implements ISocketListener{
             canalesUI[3].setCurrentValue(canal4);
         }
 
-        private int Canal4;
 
         public Canales(){
             Canal1=Canal2=Canal3=Canal4=0;
@@ -207,6 +236,7 @@ public class Channels extends AppCompatActivity implements ISocketListener{
             setCanal3(Integer.valueOf(texto.substring(18,21).replaceAll("\\s+","")));
             setCanal4(Integer.valueOf(texto.substring(27,30).replaceAll("\\s+","")));
         }
+
         @Override
         public String toString() {
             StringBuilder sb= new StringBuilder();
