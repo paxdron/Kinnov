@@ -3,6 +3,7 @@ package com.padron.kinnov;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.util.Log;
 
 import com.padron.kinnov.Conexion.SocketClient;
 import com.padron.kinnov.events.CollapseClass;
@@ -11,13 +12,14 @@ import com.padron.kinnov.events.ICollapse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Created by antonio on 12/05/16.
  */
 public class Values implements ICollapse {
     public static int T_PULSO=300;
-    public static final String[] MODOS={"cont.","sync","rec."};
+    public static final String[] MODOS={"cont.","sinc.","rec."};
     public static final List<String> ArrayModos= Arrays.asList(MODOS);
 
     private static boolean isCont=false;
@@ -135,21 +137,25 @@ public class Values implements ICollapse {
 
     @Override
     public void callbackCollapse() {
+        Log.i("item Selected", String.valueOf(itemSelected));
         if(itemSelected!=1)
             stim_mode.Collapse();
         posicionar();
-        if(itemSelected!=1)
-            if(itemSelected==2||itemSelected==3) {
+        if(itemSelected!=1) {
+            if (itemSelected == 2 || itemSelected == 3) {
                 if (itemSelected == 2)
                     carrier.collapseOthers(carrier.eSelector);
                 else
                     duracion_burst.collapseOthers(duracion_burst.eSelector);
-            }
-            else
-            {
-                selected=(Campo) Elementos.get(itemSelected-1);
+            } else {
+                selected = (Campo) Elementos.get(itemSelected - 1);
                 selected.collapseOthers(selected.eSelector);
             }
+        }else{
+            for (int i=1;i<Elementos.size();i++) {
+                ((Campo)Elementos.get(i)).eSelector.collapse();
+            }
+        }
     }
 
 

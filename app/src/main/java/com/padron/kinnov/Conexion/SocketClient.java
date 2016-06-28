@@ -11,6 +11,7 @@ import java.io.EOFException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
@@ -106,8 +107,14 @@ public class SocketClient {
             catch (EOFException e){
                 isConnected=false;
                 socketListener.disconnectedSocket();
-            }
-            catch (IOException e) {
+            } catch (SocketException e){
+                isConnected=false;
+                try {
+                    getSocket();
+                } catch (ServerNotFound serverNotFound) {
+                    serverNotFound.printStackTrace();
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
             }
         }

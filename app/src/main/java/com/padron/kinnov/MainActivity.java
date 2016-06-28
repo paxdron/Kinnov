@@ -86,7 +86,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=getApplicationContext();
-        SnackBar=new TSNCKBR((TextView) findViewById(R.id.message),(Button) findViewById(R.id.retry),(LinearLayout)findViewById(R.id.Tsnackbar));
+        SnackBar=new TSNCKBR((TextView) findViewById(R.id.message),(FancyButton) findViewById(R.id.retry),(LinearLayout)findViewById(R.id.Tsnackbar));
         getSharedPreferences();
         eSelectors= new ArrayList<>();
         initializeUI();
@@ -361,18 +361,17 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
 
     public class TSNCKBR{
         private TextView message;
-        private Button retry;
+        private FancyButton retry;
         private LinearLayout llSB;
-        public TSNCKBR(TextView message, Button retry, LinearLayout llSB) {
+        public TSNCKBR(TextView message, FancyButton retry, LinearLayout llSB) {
             this.message = message;
             this.retry = retry;
             this.llSB=llSB;
             message.setTextColor(Color.WHITE);
-            retry.setTextColor(Color.WHITE);
             retry.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-
+                    ConnectServer();
                 }
             });
         }

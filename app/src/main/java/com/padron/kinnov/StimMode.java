@@ -12,7 +12,7 @@ import mehdi.sakout.fancybuttons.FancyButton;
 /**
  * Created by Antonio on 16/05/2016.
  */
-public class StimMode {
+public class StimMode{
     CollapseClass collapseClass= CollapseClass.getInstance();
     FancyButton modo1,modo2,modo3;
     private int modSelected;

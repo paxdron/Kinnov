@@ -1,5 +1,7 @@
 package com.padron.kinnov;
 
+import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 
 import com.karumi.expandableselector.ExpandableItem;
@@ -106,7 +108,23 @@ public class Campo {
                 }
             }
         });
+        /*
+        eSelector.getChildAt(0).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("Evento +: ",event.toString());
+                return false;
+            }
+        });
 
+        eSelector.getChildAt(2).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i("Evento -: ",event.toString());
+                return false;
+            }
+        });
+        */
         eSelector.setExpandableSelectorListener(new ExpandableSelectorListener() {
             @Override
             public void onCollapse() {
