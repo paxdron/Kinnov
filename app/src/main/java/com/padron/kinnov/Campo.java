@@ -1,8 +1,10 @@
 package com.padron.kinnov;
 
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.karumi.expandableselector.ExpandableItem;
 import com.karumi.expandableselector.ExpandableSelector;
@@ -18,6 +20,7 @@ import java.util.List;
  * Created by antonio on 19/04/16.
  */
 public class Campo {
+    private GestureDetector gestureDetector;
     CollapseClass collapseClass= CollapseClass.getInstance();
     public static final int BISELECECCION=1;
     public static final int RANGO=2;
@@ -31,9 +34,11 @@ public class Campo {
     int[] values;
     private int identificador;
     ExpandableItem chageItem;
-
+    private int btn=1;
     SocketClient socket;
     int Tipo;
+    private boolean LongTap=false;
+
     public Campo(ExpandableSelector eSelector, String unidad, int[] values, List<ExpandableSelector> lista, SocketClient socket) {
         this.eSelector=eSelector;
         otros=lista;
@@ -45,6 +50,7 @@ public class Campo {
 
     public Campo(ExpandableSelector eSelector, String unidad, int Min, int Max, List<ExpandableSelector> lista, SocketClient socket) {
         this.eSelector=eSelector;
+        gestureDetector = new GestureDetector(MainActivity.context, new MyGestureDetector());
         otros=lista;
         Unidad=unidad;
         CurrentValue=0;
@@ -89,12 +95,11 @@ public class Campo {
 
 
     void setListener() {
-        eSelector.setOnExpandableItemClickListener(new OnExpandableItemClickListener() {
+        /*eSelector.setOnExpandableItemClickListener(new OnExpandableItemClickListener() {
             @Override
             public void onExpandableItemClickListener(int index, View view) {
                 switch (index) {
                     case 0:
-                        //TODO Enviar mensaje flecha menos
                         MainActivity.sendData(Constantes.DOWNPULSE,MainActivity.context);
                         break;
                     case 1:
@@ -102,10 +107,43 @@ public class Campo {
                         break;
                     case 2:
                         MainActivity.sendData(Constantes.UP_PULSE,MainActivity.context);
-                        //TODO Enviar mensaje flecha más
                         break;
                     default:
                 }
+            }
+        });*/
+        eSelector.getChildAt(0).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                btn=0;
+                if(event.getAction()==MotionEvent.ACTION_UP&&LongTap) {
+                    LongTap=false;
+                    //MainActivity.sendData(Constantes.SOLTARUP,MainActivity.context);
+                    //Toast.makeText(MainActivity.context, "Se Solto", Toast.LENGTH_SHORT).show();
+                }
+                return gestureDetector.onTouchEvent(event);
+            }
+        });
+        eSelector.getChildAt(1).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                btn=1;
+                eSelector.collapse();
+            }
+        });
+        eSelector.getChildAt(2).setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(expandido) {
+                    btn=2;
+                    if (event.getAction() == MotionEvent.ACTION_UP && LongTap) {
+                        LongTap = false;
+                        //MainActivity.sendData(Constantes.SOLTARDOWN,MainActivity.context);
+                        //Toast.makeText(MainActivity.context, "Se Solto", Toast.LENGTH_SHORT).show();
+                    }
+                    return gestureDetector.onTouchEvent(event);
+                }
+                return false;
             }
         });
         /*
@@ -260,6 +298,38 @@ public class Campo {
     public void setIdentificador(int identificador) {
         this.identificador = identificador;
     }
+
+    private class MyGestureDetector extends GestureDetector.SimpleOnGestureListener {
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent event) {
+            //Toast.makeText(MainActivity.context, "Single Tap", Toast.LENGTH_SHORT).show();
+            if(btn==0)
+                MainActivity.sendData(Constantes.UP_PULSE,MainActivity.context);
+            else if(btn==2)
+                MainActivity.sendData(Constantes.DOWNPULSE,MainActivity.context);
+            LongTap=false;
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            if(btn==0) {
+                MainActivity.sendData(Constantes.PULSARUP, MainActivity.context);
+                Toast.makeText(MainActivity.context, "Incrementando", Toast.LENGTH_SHORT).show();
+            }
+            else if(btn==2) {
+                MainActivity.sendData(Constantes.PULSARDOWN, MainActivity.context);
+                Toast.makeText(MainActivity.context, "Decrementando", Toast.LENGTH_SHORT).show();
+            }
+            LongTap = true;
+
+        }
+
+
+
+    }
+
 }
 
 

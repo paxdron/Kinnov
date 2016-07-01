@@ -22,12 +22,21 @@ public class Constantes {
     public static final byte COMMAND_NEXT           =   22;
     public static final byte COMMANDSTARTSTOP       =   17;
     public static final byte COMMANDPROGMENU        =   18;
+    public static final byte COMMAND_PULSAR        =   37;
+    public static final byte COMMAND_SOLTAR        =   38;
+
     public static final byte[] NEXTPULSE= SocketClient.pack(COMMAND_NEXT);
     public static final byte[] BACKPULSE= SocketClient.pack(COMMAND_BACK);
     public static final byte[] UP_PULSE= SocketClient.pack(COMMAND_SETUP);
     public static final byte[] DOWNPULSE= SocketClient.pack(COMMAND_SETDOWN);
     public static final byte[] STARTSTOP= SocketClient.pack(COMMANDSTARTSTOP);
     public static final byte[] PROGMENU= SocketClient.pack(COMMANDPROGMENU);
+    public static final byte[] PULSARUP     = {INIT_FRAME,COMMAND_PULSAR,COMMAND_SETUP,     FINAL_FRAME};
+    public static final byte[] PULSARDOWN   = {INIT_FRAME,COMMAND_PULSAR,COMMAND_SETDOWN,   FINAL_FRAME};
+    public static final byte[] SOLTARUP     = {INIT_FRAME,COMMAND_SOLTAR,COMMAND_SETUP,     FINAL_FRAME};
+    public static final byte[] SOLTARDOWN   = {INIT_FRAME,COMMAND_SOLTAR,COMMAND_SETDOWN,   FINAL_FRAME};
+
+
     public static final byte[] UPDATETEXT             =   {INIT_FRAME,GETLCD,FINAL_FRAME};
     public static final int DELAY                     =  300;
     private static final String[] PROTOCOLS_          =    {"fort.","reedu","fesa","reduc","modd"};

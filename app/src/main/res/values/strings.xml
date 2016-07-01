@@ -36,12 +36,12 @@
         <item>Fortalecimiento muscular en atletas</item>
     </array>
     <array name="infoProtocolos">
-        <item>Este programa debe ser utilizado con el objetivo de facilitación motriz y reaprendizaje motriz.</item>
-        <item>Ese protocolo debe ser utilizado en pacientes que presentan cuadros de atrofia muscular por desuso.</item>
-        <item>Ese programa debe ser utilizado para prevenir la atrofia muscular por desuso, prevenir la subluxación del hombro después de episodios de AVC y también para facilitar el reaprendizaje motriz</item>
-        <item>Ese protocolo de uso de la con la finalidad de control y reducción de edema así como para procedimientos de drenaje linfático. La estimulación promoverá una contracción muscular sutil y repetitiva produciendo acción de bombeo muscular.</item>
-        <item>El objetivo del uso de ese protocolo es promover analgesia por la activación de la compuerta de dolor.</item>
         <item>Ese protocolo tiene la capacidad de promover la analgesia por la estimulación del mecanismo descendiente relacionado a la liberación de endorfinas.</item>
+        <item>El objetivo del uso de ese protocolo es promover analgesia por la activación de la compuerta de dolor.</item>
+        <item>Ese protocolo de la corriente AUSSIE debe ser utilizado con la con la finalidad de control y reducción de edema así como para procedimientos de drenaje linfático.</item>
+        <item>Ese programa debe ser utilizado para prevenir la atrofia muscular por desuso, prevenir la subluxación del hombro después de episodios de AVC y también para facilitar el reaprendizaje motriz</item>
+        <item>Ese protocolo debe ser utilizado en pacientes que presentan cuadros de atrofia muscular por desuso.</item>
+        <item>Este programa debe ser utilizado con el objetivo de facilitación motriz y reaprendizaje motriz.</item>
         <item>El objetivo de ese programa es proporcionar el aumento de la fuerza muscular en individuos normales, o sea, sin disfunción del sistema neuro-osteomioarticular.</item>
     </array>
     <string name="menuItem">Configuración Red</string>

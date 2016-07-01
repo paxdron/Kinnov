@@ -33,7 +33,7 @@ public class MenuMaquina extends AppCompatActivity  implements ISocketListener{
     Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            tvWea.setText(textoLCD+ " "+ indice);
+            tvWea.setText(textoLCD);
             if(!isMoving) {
                 expListView.expandGroup(indice - 1);
                 collapseOthers(indice - 1);
