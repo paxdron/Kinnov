@@ -1,6 +1,8 @@
 package com.padron.kinnov;
 
+import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Color;
@@ -8,9 +10,11 @@ import android.graphics.Typeface;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -79,7 +83,29 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
             sendData(Constantes.UPDATETEXT,MainActivity.context);
         }
     };
+    private byte[] pack;
+    /*private Handler handlerMensajes;
+    Runnable mRunColaMensajes= new Runnable() {
+        @Override
+        public void run() {
+            if(!Constantes.colaMensajes.vacia()){
+                pack=(byte[])Constantes.colaMensajes.frente();
+                Constantes.colaMensajes.desencolar();
+                try {
+                    SocketClient.Send_Socket_TLS(pack, pack.length);
+                } catch (SocketClosed socketClosed) {
+                    Toast.makeText(getApplicationContext(),"Socket no inicado",Toast.LENGTH_SHORT).show();
+                }
+            }
+            handlerMensajes.post(mRunColaMensajes);
+        }
+    };*/
     private FancyButton progmenu;
+    private AlertDialog alertdialog;
+    private AlertDialog.Builder builder;
+    private boolean isChIdiomaOpen=false;
+    private int idiomaSelect;
+    private ProgressDialog pdEspera;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -116,6 +142,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         SnackBar.show();
         SnackBar.Conectando();
         ConnectServer();
+        //handlerMensajes= new Handler();
+        //handlerMensajes.post(mRunColaMensajes);
     }
 
     @Override
@@ -236,12 +264,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         TextView mTitle = (TextView) toolbar.findViewById(R.id.toolbar_title);
         mTitle.setTypeface(custom_font);
         setSupportActionBar(toolbar);
-    }
-
-
-
-    public void menu(View v){
-        startActivity(new Intent(this, MenuMaquina.class));
+        setIdiomAlertDialog();
+        setProgressDialog();
     }
 
     @Override
@@ -258,6 +282,10 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 //Toast.makeText(this, "ADD!", Toast.LENGTH_SHORT).show();
                 Intent i = new Intent(this, SettingsActivity.class);
                 startActivity(i);
+                return true;
+            case R.id.ch_idiom:
+                pdEspera.show();
+                sendData(Constantes.CH_IDIOM,this);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
@@ -288,10 +316,17 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
 
     }
 
+    public void setProgressDialog(){
+        pdEspera = new ProgressDialog(this);
+        pdEspera.setMessage("Espere...");
+        pdEspera.setCanceledOnTouchOutside(false);
+    }
+
     public void parseMessage(){
         buffer=SocketClient.BUFFER;
         i=1;
         textoPantalla.setLength(0);
+        Constantes.IDIOMA=buffer[Constantes.POSIDIOMA];
         elemento=buffer[i++];
         System.out.println();
         while(elemento!=2){
@@ -305,9 +340,12 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         ColCursor=(int)buffer[i++];
         textoLCD=textoPantalla.toString();
         System.out.println(textoLCD);
+        alertdialog.dismiss();
+        isChIdiomaOpen=false;
         if(textoLCD.substring(0, 2).equals("1:")){
             secondActivity=true;
             startActivity(new Intent(getApplicationContext(), Channels.class));
+            Constantes.IsManual=true;
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
             System.out.println(modo);
@@ -315,16 +353,84 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
+                        pdEspera.dismiss();
                         values.setValues(textoLCD, modo,RawCursor,ColCursor);
+                        Constantes.IsManual=true;
                     }
                 });
             }
             else{
                 if((Constantes.PROTOCOLS.contains(modo))){
-                    startActivity(new Intent(getApplicationContext(), MenuMaquina.class));
+                    startActivity(new Intent(getApplicationContext(), ProgMenu.class));
+                    Constantes.IsManual=true;
+                }
+                else {
+                    String strMenu=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
+                    if(strMenu.equals(Constantes.STRMENU)) {
+                        runOnUiThread(new Runnable() {
+                            @Override
+                            public void run() {
+                                idiomaSelect= Constantes.IDIOMAS.indexOf(textoLCD.substring(16,32).replaceAll("\\s+","").toLowerCase());
+                                setIdiomAlertDialog();
+                                if(!isChIdiomaOpen) {
+                                    isChIdiomaOpen=true;
+                                    if(idiomaSelect>=0) {
+                                        pdEspera.dismiss();
+                                        alertdialog.show();
+                                    }
+                                }
+                            }
+                        });
+                    }
                 }
             }
         }
+    }
+
+    public void setIdiomAlertDialog(){
+        final CharSequence[] idiomas=  getResources().getTextArray(R.array.idiomas);
+        builder = new AlertDialog.Builder(MainActivity.this)
+                .setTitle(getString(R.string.ch_idiom))
+                .setSingleChoiceItems(idiomas, idiomaSelect, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch(Constantes.IDIOMA){
+                            case 1:
+                                if(which==1){
+                                    sendData(Constantes.UP_PULSE,getApplication());
+                                }else{
+                                    if(which==2)
+                                        sendData(Constantes.DOWNPULSE,getApplication());
+                                }
+                                break;
+                            case 2:
+                                if(which==2){
+                                    sendData(Constantes.UP_PULSE,getApplication());
+                                }else{
+                                    if(which==0)
+                                        sendData(Constantes.DOWNPULSE,getApplication());
+                                }
+                                break;
+                            case 3:
+                                if(which==0){
+                                    sendData(Constantes.UP_PULSE,getApplication());
+                                }else{
+                                    if(which==1)
+                                        sendData(Constantes.DOWNPULSE,getApplication());
+                                }
+                                break;
+                        }
+                    }
+                }).setCancelable(false).setPositiveButton(getString(R.string.select), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        pdEspera.show();
+                        sendData(Constantes.PROGMENU, getApplicationContext());
+                        Toast.makeText(getApplicationContext(),
+                                "Idioma seleccionado " + idiomas[idiomaSelect], Toast.LENGTH_LONG).show();
+                    }
+                });
+        alertdialog = builder.create();
     }
 
     @Override
@@ -352,10 +458,12 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     }
 
     public static void sendData(byte[] pack,Context context){
+            //Constantes.IsManual=false;
+            //Constantes.colaMensajes.encolar(pack);
         try {
             SocketClient.Send_Socket_TLS(pack, pack.length);
         } catch (SocketClosed socketClosed) {
-            Toast.makeText(context, "Socket no iniciado", Toast.LENGTH_SHORT).show();
+            socketClosed.printStackTrace();
         }
     }
 
@@ -383,12 +491,12 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         }
         public void Retry(){
             retry.setVisibility(View.VISIBLE);
-            message.setText("No se pudo establecer la conexión con el servidor");
+            message.setText(getString(R.string.noConn));
             ConnectServer();
         }
 
         public void Conectando(){
-            message.setText("Connectando...");
+            message.setText(getString(R.string.conectando));
             retry.setVisibility(View.GONE);
         }
     }

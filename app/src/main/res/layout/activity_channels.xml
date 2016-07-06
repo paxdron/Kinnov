@@ -62,6 +62,7 @@
                     android:id="@+id/tvTituloC1"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal1"
+                    android:background="@drawable/rounded_corner_transparent"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh1"
@@ -112,6 +113,7 @@
                     android:id="@+id/tvTituloC2"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal2"
+                    android:background="@drawable/rounded_corner_transparent"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh2"
@@ -171,6 +173,7 @@
                     android:id="@+id/tvTituloC3"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal3"
+                    android:background="@drawable/rounded_corner_transparent"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh3"
@@ -221,6 +224,7 @@
                     android:id="@+id/tvTituloC4"
                     android:textSize="@dimen/titleChanel"
                     android:text="@string/tvCanal4"
+                    android:background="@drawable/rounded_corner_transparent"
                     />
                 <mehdi.sakout.fancybuttons.FancyButton
                     android:id="@+id/btn_upCh4"

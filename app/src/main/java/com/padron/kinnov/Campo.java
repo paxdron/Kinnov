@@ -180,6 +180,7 @@ public class Campo {
                 //Do something here
                 if (!expandido) {
                     Values.itemSelected=identificador;
+                    Constantes.IsManual=false;
                     collapseClass.notifica();
                     ExpandableItem segundo = eSelector.getExpandableItem(1);
                     eSelector.updateExpandableItem(1, eSelector.getExpandableItem(0));
@@ -239,6 +240,7 @@ public class Campo {
             @Override
             public void onExpand() {
                 Values.itemSelected=identificador;
+                Constantes.IsManual=false;
                 collapseClass.notifica();
                 //Do something here
             }

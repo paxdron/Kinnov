@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Created by antonio on 12/05/16.
+ * La clase se encarga de procesar los mensajes, expandir los botones, colapsarlos y realizar los saltos necesario
  */
 public class Values implements ICollapse {
     public static int T_PULSO=300;
-    public static final String[] MODOS={"cont.","sinc.","rec."};
+    public static final String[] MODOS={"cont.","sinc.","rec.","sync"};
+
     public static final List<String> ArrayModos= Arrays.asList(MODOS);
 
     private static boolean isCont=false;
@@ -27,6 +28,7 @@ public class Values implements ICollapse {
     public static int currentItem=0;
     public static int NumItems=9;
     public static int Media=4;
+    private final SocketClient socket;
     public CollapseClass collapseClass;
 
     private StimMode stim_mode;
@@ -41,34 +43,8 @@ public class Values implements ICollapse {
     private ArrayList<Object> Elementos;
     private Campo selected;
     private int pasos=0;
-    private SocketClient socket;
-    private byte[] BackButton;
-    private byte[] NextButton;
-    private Handler mHandler;
     private int times;
     private Context context;
-    Runnable mRunNext= new Runnable() {
-        @Override
-        public void run() {
-            if(times!=0)
-            {
-                times--;
-                MainActivity.sendData(Constantes.NEXTPULSE, context);
-                mHandler.postDelayed(mRunNext, Constantes.DELAY);
-            }
-        }
-    };
-    Runnable mRunBack= new Runnable() {
-        @Override
-        public void run() {
-            if(times!=0)
-            {
-                times--;
-                MainActivity.sendData(Constantes.BACKPULSE,context);
-                mHandler.postDelayed(mRunBack, Constantes.DELAY);
-            }
-        }
-    };
     public Values(StimMode stim_mode,
                   Campo carrier,
                   Campo duracion_burst,
@@ -104,11 +80,12 @@ public class Values implements ICollapse {
         collapseClass=CollapseClass.getInstance();
         collapseClass.registerCallback(this);
         setIds();
-        mHandler= new Handler();
     }
 
     public void setValues(String texto,String Modo, int rawCursor, int colCursor){
         int modo= ArrayModos.indexOf(Modo.toLowerCase());
+        if(modo==3)
+            modo=1;
         stim_mode.selectMode(modo);
         carrier.setCurrentValue1(Integer.valueOf(texto.substring(7, 8)));
         duracion_burst.setCurrentValue1(Integer.valueOf(texto.substring(10, 11)));
@@ -138,22 +115,24 @@ public class Values implements ICollapse {
     @Override
     public void callbackCollapse() {
         Log.i("item Selected", String.valueOf(itemSelected));
-        if(itemSelected!=1)
-            stim_mode.Collapse();
-        posicionar();
-        if(itemSelected!=1) {
-            if (itemSelected == 2 || itemSelected == 3) {
-                if (itemSelected == 2)
-                    carrier.collapseOthers(carrier.eSelector);
-                else
-                    duracion_burst.collapseOthers(duracion_burst.eSelector);
+        if(itemSelected>0) {
+            if (itemSelected != 1)
+                stim_mode.Collapse();
+                posicionar();
+            if (itemSelected != 1) {
+                if (itemSelected == 2 || itemSelected == 3) {
+                    if (itemSelected == 2)
+                        carrier.collapseOthers(carrier.eSelector);
+                    else
+                        duracion_burst.collapseOthers(duracion_burst.eSelector);
+                } else {
+                    selected = (Campo) Elementos.get(itemSelected - 1);
+                    selected.collapseOthers(selected.eSelector);
+                }
             } else {
-                selected = (Campo) Elementos.get(itemSelected - 1);
-                selected.collapseOthers(selected.eSelector);
-            }
-        }else{
-            for (int i=1;i<Elementos.size();i++) {
-                ((Campo)Elementos.get(i)).eSelector.collapse();
+                for (int i = 1; i < Elementos.size(); i++) {
+                    ((Campo) Elementos.get(i)).eSelector.collapse();
+                }
             }
         }
     }
@@ -168,27 +147,32 @@ public class Values implements ICollapse {
             if (Math.abs(pasos) <= Media) {
                 times=Math.abs(pasos);
                 if(pasos>0) {
-                    mHandler.postDelayed(mRunNext, Constantes.DELAY);
+                    MainActivity.sendData(SocketClient.pack(new byte[]{Constantes.COMMAND_PULSOS,(byte)times,Constantes.COMMAND_NEXT}),MainActivity.context);
+                    //mHandler.post(mRunNext);
                 }
                 else
-                    mHandler.postDelayed(mRunBack, Constantes.DELAY);
+                    MainActivity.sendData(SocketClient.pack(new byte[]{Constantes.COMMAND_PULSOS,(byte)times,Constantes.COMMAND_BACK}),MainActivity.context);
+                    //mHandler.post(mRunBack);
             }
             else{
                 if(pasos>0) {
                     pasos=NumItems-pasos;
                     times=pasos;
-                    mHandler.postDelayed(mRunBack, Constantes.DELAY);
+                    MainActivity.sendData(SocketClient.pack(new byte[]{Constantes.COMMAND_PULSOS,(byte)times,Constantes.COMMAND_BACK}),MainActivity.context);
+                    //mHandler.post(mRunBack);
                 }
                 else{
                     pasos=NumItems+pasos;
                     times=pasos;
-                    mHandler.postDelayed(mRunNext, Constantes.DELAY);
+                    MainActivity.sendData(SocketClient.pack(new byte[]{Constantes.COMMAND_PULSOS,(byte)times,Constantes.COMMAND_NEXT}),MainActivity.context);
+                    //mHandler.post(mRunNext);
                 }
             }
         }
     }
 
     public void parserCurentPos(int raw, int col){
+        int anterior=currentItem;
         if(raw==0){
             switch(col){
                 case 0:
@@ -230,6 +214,15 @@ public class Values implements ICollapse {
                 }
             }
         }
+        if(currentItem!=anterior)
+            if(Constantes.IsManual)
+                collapseAll();
+    }
+
+    private void collapseAll(){
+        stim_mode.Collapse();
+        for(int i=1;i<Elementos.size();i++)
+            ((Campo) Elementos.get(i)).eSelector.collapse();
     }
 
     /**

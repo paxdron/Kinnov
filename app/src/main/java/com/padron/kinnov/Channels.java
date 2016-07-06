@@ -1,11 +1,14 @@
 package com.padron.kinnov;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.support.annotation.UiThread;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
@@ -35,9 +38,18 @@ public class Channels extends AppCompatActivity implements ISocketListener{
         public void run() {
             for(int i=0;i<4;i++) {
                 if ((leds & Constantes.MASKS[i]) == Constantes.MASKS[i]) {
-                    canalesUI[i].tvTitle.setTextColor(ContextCompat.getColor(getApplication(), R.color.led_color));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        canalesUI[i].tvTitle.setBackground(ContextCompat.getDrawable(getApplication(),R.drawable.rounded_corner));
+                    }
+                    else{
+                        canalesUI[i].tvTitle.setBackgroundDrawable(ContextCompat.getDrawable(getApplication(),R.drawable.rounded_corner));
+                    }
                 } else {
-                    canalesUI[i].tvTitle.setTextColor(ContextCompat.getColor(getApplication(), R.color.colorPrimaryDark));
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN) {
+                        canalesUI[i].tvTitle.setBackground(ContextCompat.getDrawable(getApplication(), R.drawable.rounded_corner_transparent));
+                    }else{
+                        canalesUI[i].tvTitle.setBackgroundDrawable(ContextCompat.getDrawable(getApplication(), R.drawable.rounded_corner_transparent));
+                    }
                 }
             }
         }
@@ -114,12 +126,28 @@ public class Channels extends AppCompatActivity implements ISocketListener{
             mLEDHandler.post(mRunLeds);
         }else {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
-            Log.i("Modo: ", modo);
             if(Values.ArrayModos.contains(modo)){
                 Channels.this.finish();
             }
             else{
-                MainActivity.sendData(Constantes.STARTSTOP,getApplicationContext());
+                modo=textoLCD.substring(1,15).replaceAll("\\s+","").toLowerCase();
+                Log.i("Modo: ", modo);
+                if(Constantes.END.contains(modo)){
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            AlertDialog.Builder dialogo = new AlertDialog.Builder(Channels.this);
+                            dialogo.setTitle("Fin de Ciclo").setMessage("Teclee Start/Stop").setCancelable(false).setPositiveButton("Start/Stop", new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    MainActivity.sendData(Constantes.STARTSTOP,getApplicationContext());
+                                }
+                            }).show();
+                        }
+                    });
+
+                }
+                    //MainActivity.sendData(Constantes.STARTSTOP,getApplicationContext());
             }
         }
     }

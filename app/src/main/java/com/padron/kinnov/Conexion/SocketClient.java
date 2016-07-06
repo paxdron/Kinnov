@@ -1,5 +1,7 @@
 package com.padron.kinnov.Conexion;
 
+import android.util.Log;
+
 import com.padron.kinnov.Constantes;
 import com.padron.kinnov.events.SocketListener;
 import com.padron.kinnov.exceptions.ServerNotFound;
@@ -15,7 +17,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 
 /**
- * Created by Antonio on 17/05/2016.
+ * Se encarga de la conexion del socket, el empaquetado y desempaquetado de los mensajes
  */
 public class SocketClient {
     private static Socket Socket;
@@ -36,8 +38,7 @@ public class SocketClient {
                 new Thread(new Read_Socket()).start();
                 isConnected=Socket.isConnected();
             }catch( UnknownHostException e ) {
-                System.out.println(e);
-                System.out.println(
+                Log.i("Error",
                         "Debes estar conectado para que esto funcione bien." );
             }
             catch (IOException e) {
@@ -156,7 +157,23 @@ public class SocketClient {
             paquete[i++]=Constantes.DATA_LINK;
         }
         paquete[i++]=Boton;
-        paquete[i++]=Constantes.FINAL_FRAME;
+        paquete[i]=Constantes.FINAL_FRAME;
+        return paquete;
+    }
+
+    public static byte[] pack(byte[] comandos){
+        byte[] paquete = new byte[7];
+        int i=0;
+        paquete[i++]=Constantes.INIT_FRAME;
+        for(int j=0;j<comandos.length;j++) {
+            if (comandos[j] == Constantes.INIT_FRAME || comandos[j] == Constantes.FINAL_FRAME || comandos[j] == Constantes.DATA_LINK) {
+                paquete[i++] = Constantes.DATA_LINK;
+            }
+            paquete[i++] = comandos[j];
+        }
+        paquete[i]=Constantes.FINAL_FRAME;
+        for(int j=0;j<paquete.length;j++)
+        System.out.print(paquete[j++] +" ");
         return paquete;
     }
 
