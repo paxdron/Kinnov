@@ -1,0 +1,95 @@
+<resources>
+    <string name="app_name">Kinnov</string>
+    <string name="stim_mode">Modo de Estimulación</string>
+    <string name="carrier">Frecuencia de la Portadora</string>
+    <string name="duracion_burst">Duracion de Burst</string>
+    <string name="frecuencia_burst">Frecuencia de Burst</string>
+    <string name="tiempo_aplicacion">Tiempo de Aplicación</string>
+    <string name="rise">Tiempo de Ascenso</string>
+    <string name="on">Tiempo Encendido</string>
+    <string name="decay">Tiempo de Bajada</string>
+    <string name="off">Tiempo de Reposo</string>
+    <string name="hz">Hz</string>
+    <string name="ms">ms</string>
+    <string name="khz">KHz</string>
+    <string name="s">s</string>
+    <string name="m">m</string>
+    <string name="tvCanal1">Canal 1</string>
+    <string name="tvCanal2">Canal 2</string>
+    <string name="tvCanal3">Canal 3</string>
+    <string name="tvCanal4">Canal 4</string>
+
+    <string name="tituloMaq">NEURODYN AUSSIE SPORT</string>
+    <array name="stimm_mode">
+        <item>Continuo</item>
+        <item>Sicronizado</item>
+        <item>Recíproco</item>
+    </array>
+
+    <array name="titleProtocolos">
+        <item>Modulación del dolor por activación del mecanismo descendente</item>
+        <item>Modulación del dolor por activación del mecanismo ascendente</item>
+        <item>Reducción de edema y drenaje linfático</item>
+        <item>Estimulación Eléctrica Funcional después de Accidente Vascular Cerebral (AVC)</item>
+        <item>Fortalecimiento después de atrofia por desuso</item>
+        <item>Reeducación motriz</item>
+        <item>Fortalecimiento muscular en atletas</item>
+    </array>
+
+    <array name="infoProtocolos">
+        <item>Ese protocolo tiene la capacidad de promover la analgesia por la estimulación del
+            mecanismo descendiente relacionado a la liberación de endorfinas.
+        </item>
+        <item>El objetivo del uso de ese protocolo es promover analgesia por la activación de la
+            compuerta de dolor.
+        </item>
+        <item>Ese protocolo de la corriente AUSSIE debe ser utilizado con la con la finalidad de
+            control y reducción de edema así como para procedimientos de drenaje linfático.
+        </item>
+        <item>Ese programa debe ser utilizado para prevenir la atrofia muscular por desuso, prevenir
+            la subluxación del hombro después de episodios de AVC y también para facilitar el
+            reaprendizaje motriz
+        </item>
+        <item>Ese protocolo debe ser utilizado en pacientes que presentan cuadros de atrofia
+            muscular por desuso.
+        </item>
+        <item>Este programa debe ser utilizado con el objetivo de facilitación motriz y
+            reaprendizaje motriz.
+        </item>
+        <item>El objetivo de ese programa es proporcionar el aumento de la fuerza muscular en
+            individuos normales, o sea, sin disfunción del sistema neuro-osteomioarticular.
+        </item>
+    </array>
+    <string name="menuItem">Configuración Red</string>
+    <string name="direccion_ip">Direccion IP</string>
+    <string name="direccion_ip_resumen">Direccion IP del Servidor</string>
+    <string name="puerto_resumen">Puerto del Servidor</string>
+    <string name="puerto">Puerto</string>
+    <string name="pref_gen">Red</string>
+
+    <string name="mod_dolor_mec_desc">Modulación del dolor por activación del mecanismo descendente</string>
+    <string name="Mod_dolor_mec_asc">Modulación del dolor por activación del mecanismo ascendente</string>
+    <string name="reducion_endema">Reducción de edema y drenaje linfático</string>
+    <string name="fes_apos_ACV">Estimulación Eléctrica Funcional después de Accidente Vascular Cerebral (AVC)</string>
+    <string name="fort_despues">Fortalecimiento después de atrofia por desuso</string>
+
+
+    <string name="ch_idiom">Cambiar Idioma</string>
+    <string name="select">Seleccionar</string>
+    <string name="prog_menu">Prog / Menu</string>
+    <string name="noConn">No se pudo establecer la conexión con el servidor</string>
+    <string name="conectando">Connectando...</string>
+    <string name="end_cycle">Fin de Ciclo</string>
+    <string name="start_stop">Teclee Start/Stop</string>
+    <string name="t_start_stop">Teclee Start/Stop</string>
+    <string name="start">Start</string>
+    <string name="continuo">Continuo</string>
+    <string name="sincronizado">Sincronizado</string>
+    <string name="detener">Detener</string>
+
+    <array name="idiomas">
+        <item>Español</item>
+        <item>Inglés</item>
+        <item>Portugués</item>
+    </array>
+</resources>
