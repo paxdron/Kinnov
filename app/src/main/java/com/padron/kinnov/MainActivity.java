@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -28,6 +29,7 @@ import com.androidadvance.topsnackbar.TSnackbar;
 import com.karumi.expandableselector.ExpandableSelector;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import com.padron.kinnov.Conexion.SocketClient;
 import com.padron.kinnov.events.ISocketListener;
@@ -106,12 +108,15 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     private boolean isChIdiomaOpen=false;
     private int idiomaSelect;
     private ProgressDialog pdEspera;
+    private Configuration config;
+    private List<String> PrtclsbyLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         context=getApplicationContext();
+        config = new Configuration();
         SnackBar=new TSNCKBR((TextView) findViewById(R.id.message),(FancyButton) findViewById(R.id.retry),(LinearLayout)findViewById(R.id.Tsnackbar));
         getSharedPreferences();
         eSelectors= new ArrayList<>();
@@ -144,6 +149,13 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         ConnectServer();
         //handlerMensajes= new Handler();
         //handlerMensajes.post(mRunColaMensajes);
+    }
+
+    public void changeLanguage(int indexLaguage){
+        Locale locale = new Locale(Constantes.IDIOMASLOCALE[indexLaguage-1]);
+        Locale.setDefault(locale);
+        config.locale = locale;
+        getApplication().getResources().updateConfiguration(config,getApplication().getResources().getDisplayMetrics());
     }
 
     @Override
@@ -327,6 +339,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         i=1;
         textoPantalla.setLength(0);
         Constantes.IDIOMA=buffer[Constantes.POSIDIOMA];
+        changeLanguage(Constantes.IDIOMA);
         elemento=buffer[i++];
         System.out.println();
         while(elemento!=2){
@@ -360,7 +373,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 });
             }
             else{
-                if((Constantes.PROTOCOLS.contains(modo))){
+                PrtclsbyLng=(Constantes.IDIOMA==1)?Constantes.PROTOCOLS:(Constantes.IDIOMA==2)?Constantes.PROTOCOLSEN:Constantes.PROTOCOLSPT;
+                if((PrtclsbyLng.contains(modo))){
                     startActivity(new Intent(getApplicationContext(), ProgMenu.class));
                     Constantes.IsManual=true;
                 }

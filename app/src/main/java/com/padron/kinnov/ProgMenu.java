@@ -39,6 +39,7 @@ public class ProgMenu extends AppCompatActivity implements ISocketListener{
             }
         }
     };
+    private List<String> PrtclsbyLng;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -104,29 +105,67 @@ public class ProgMenu extends AppCompatActivity implements ISocketListener{
             Reeducacion     motriz
             Fort. muscular  en atletas
          */
-        if((Constantes.PROTOCOLS.contains(modo))){
+
+        PrtclsbyLng=(Constantes.IDIOMA==1)?Constantes.PROTOCOLS:(Constantes.IDIOMA==2)?Constantes.PROTOCOLSEN:Constantes.PROTOCOLSPT;
+
+        if((PrtclsbyLng.contains(modo))){
             switch(modo){
                 case "modd":
-                    if(textoLCD.charAt(16)=='d')
-                        indice=1;
-                    else
-                    if(textoLCD.charAt(16)=='m')
-                        indice=2;
+                case "mod.":
+                case "pain":
+                    if(Constantes.IDIOMA==1) {
+                        if (textoLCD.charAt(16) == 'd')
+                            indice = 1;
+                        else if (textoLCD.charAt(16) == 'm')
+                            indice = 2;
+                    }else {
+                        if (Constantes.IDIOMA == 2) {
+                            if (textoLCD.charAt(16) == 'd')
+                                indice = 1;
+                            else if (textoLCD.charAt(16) == 'a')
+                                indice = 2;
+                        }else {
+                            if (Constantes.IDIOMA == 3) {
+                                if (textoLCD.charAt(21) == 'd')
+                                    indice = 1;
+                                else if (textoLCD.charAt(21) == 'a')
+                                    indice = 2;
+                            }
+                        }
+                    }
                     break;
                 case "reduc":
+                case "oedem":
                     indice=3;
                     break;
                 case "fesa":
+                case "fesp":
                     indice=4;
                     break;
                 case  "fort.":
-                    if(textoLCD.charAt(6)=='d')
-                        indice=5;
-                    else
-                    if(textoLCD.charAt(6)=='m')
-                        indice=7;
+                case  "stren":
+                    if(Constantes.IDIOMA==2) {
+                        if (textoLCD.charAt(16) == 'd')
+                            indice = 5;
+                        else if (textoLCD.charAt(16) == 'i')
+                            indice = 7;
+                    }else {
+                        if (Constantes.IDIOMA == 1) {
+                            if (textoLCD.charAt(6) == 'd')
+                                indice = 5;
+                            else if (textoLCD.charAt(6) == 'm')
+                                indice = 7;
+                        }
+                        else{
+                            if (textoLCD.charAt(16) == 'a')
+                                indice = 5;
+                            else if (textoLCD.charAt(16) == 'e')
+                                indice = 7;
+                        }
+                    }
                     break;
                 case "reedu":
+                case "motor":
                     indice=6;
                     break;
             }

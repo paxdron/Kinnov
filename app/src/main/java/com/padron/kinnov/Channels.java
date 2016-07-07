@@ -137,7 +137,7 @@ public class Channels extends AppCompatActivity implements ISocketListener{
                         @Override
                         public void run() {
                             AlertDialog.Builder dialogo = new AlertDialog.Builder(Channels.this);
-                            dialogo.setTitle("Fin de Ciclo").setMessage("Teclee Start/Stop").setCancelable(false).setPositiveButton("Start/Stop", new DialogInterface.OnClickListener() {
+                            dialogo.setTitle(getString(R.string.end_cycle)).setMessage(getString(R.string.t_start_stop)).setCancelable(false).setPositiveButton(getString(R.string.start_stop), new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
                                     MainActivity.sendData(Constantes.STARTSTOP,getApplicationContext());

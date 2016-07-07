@@ -2,8 +2,12 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/colorWhite"
-    xmlns:fancy="http://schemas.android.com/apk/res-auto">
+    xmlns:fancy="http://schemas.android.com/apk/res-auto"
+    tools:context="com.padron.kinnov.MainActivity"
+    >
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="@dimen/footerHeight"
@@ -43,7 +47,7 @@
             android:layout_gravity="center_vertical"
             android:backgroundTint="@color/colorTransparent"
             fancy:fb_defaultColor="#00FFFFFF"
-            fancy:fb_text="Continuo"
+            fancy:fb_text=""
             fancy:fb_textColor="@color/colorWhite"
             />
     </LinearLayout>
@@ -68,7 +72,7 @@
             fancy:fb_defaultColor="@color/colorAccent"
             fancy:fb_focusColor="@color/colorAccentDark"
             fancy:fb_radius="64dp"
-            fancy:fb_text="PROG/MENU"
+            fancy:fb_text="@string/prog_menu"
             fancy:fb_textColor="#FFFFFF"
             fancy:fb_textSize="20sp"
             />
@@ -85,7 +89,7 @@
             fancy:fb_iconResource="@drawable/play"
             fancy:fb_iconPosition="right"
             fancy:fb_radius="64dp"
-            fancy:fb_text="Iniciar"
+            fancy:fb_text="@string/start"
             fancy:fb_textColor="#FFFFFF"
             fancy:fb_textSize="20sp"
             />
@@ -129,7 +133,7 @@
                     fancy:fb_defaultColor="#00FFFFFF"
                     fancy:fb_focusColor="#313131"
                     fancy:fb_radius="64dp"
-                    fancy:fb_text="Continuo"
+                    fancy:fb_text="@string/continuo"
                     fancy:fb_textColor="@color/colorPrimary"
                     fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"
@@ -142,7 +146,7 @@
                     fancy:fb_defaultColor="#00FFFFFF"
                     fancy:fb_focusColor="#313131"
                     fancy:fb_radius="64dp"
-                    fancy:fb_text="Sincronizado"
+                    fancy:fb_text="@string/sincronizado"
                     fancy:fb_textColor="@color/colorPrimary"
                     fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"
@@ -155,7 +159,7 @@
                     fancy:fb_defaultColor="#00FFFFFF"
                     fancy:fb_focusColor="#313131"
                     fancy:fb_radius="64dp"
-                    fancy:fb_text="Recíproco"
+                    fancy:fb_text="@string/reciproco"
                     fancy:fb_textColor="@color/colorPrimary"
                     fancy:fb_borderColor="@color/colorPrimary"
                     fancy:fb_borderWidth="1dp"

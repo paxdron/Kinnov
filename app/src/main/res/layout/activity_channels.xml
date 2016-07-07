@@ -29,7 +29,7 @@
         fancy:fb_iconResource="@drawable/stop"
         fancy:fb_iconPosition="right"
         fancy:fb_radius="64dp"
-        fancy:fb_text="Detener"
+        fancy:fb_text="@string/detener"
         fancy:fb_textColor="#FFFFFF"
         fancy:fb_textSize="20sp"
         />

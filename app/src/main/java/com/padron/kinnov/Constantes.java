@@ -2,6 +2,7 @@ package com.padron.kinnov;
 
 import com.padron.kinnov.Conexion.SocketClient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -42,10 +43,15 @@ public class Constantes {
     public static final byte[] UPDATETEXT               =   {INIT_FRAME,GETLCD,FINAL_FRAME};
     public static final int DELAY                       =  300;
     private static final String[] PROTOCOLS_            =    {"fort.","reedu","fesa","reduc","modd"};
+    private static final String[] PROTOCOLS_PT            =    {"fort.","reedu","fesa","reduc","mod."};
+    private static final String[] PROTOCOLS_EN            =    {"stren","motor","fesp","oedem","pain"};
     public static final List<String> PROTOCOLS          =     Arrays.asList(PROTOCOLS_);
+    public static final List<String> PROTOCOLSEN          =     Arrays.asList(PROTOCOLS_EN);
+    public static final List<String> PROTOCOLSPT          =     Arrays.asList(PROTOCOLS_PT);
     private static final String[] END_                  =    {"teclee","pressione","press"};
     public static final List<String> END                =     Arrays.asList(END_);
     private static final String[] IDIOMAS_                  =    {"espanol","english","portugues"};
+    public static final String[] IDIOMASLOCALE                  =    {"es","en","pt"};
     public static final List<String> IDIOMAS                =     Arrays.asList(IDIOMAS_);
     public static final int NUMPROTOCOLS                =     7;
     public static final int MEDIAPROTOCOLS              =     3;
