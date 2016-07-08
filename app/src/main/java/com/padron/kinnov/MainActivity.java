@@ -6,8 +6,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Build;
 import android.os.Handler;
 import android.preference.PreferenceManager;
 import android.support.v4.content.ContextCompat;
@@ -110,6 +112,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     private ProgressDialog pdEspera;
     private Configuration config;
     private List<String> PrtclsbyLng;
+    private int idiomaAnterior;
+    private boolean chLanOpen;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -151,12 +155,19 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         //handlerMensajes.post(mRunColaMensajes);
     }
 
-    public void changeLanguage(int indexLaguage){
-        Locale locale = new Locale(Constantes.IDIOMASLOCALE[indexLaguage-1]);
+    private boolean updateResources(Context context, String language) {
+        Locale locale = new Locale(language);
         Locale.setDefault(locale);
-        config.locale = locale;
-        getApplication().getResources().updateConfiguration(config,getApplication().getResources().getDisplayMetrics());
+
+        Resources resources = context.getResources();
+
+        Configuration configuration = resources.getConfiguration();
+        configuration.locale = locale;
+
+        resources.updateConfiguration(configuration, resources.getDisplayMetrics());
+        return true;
     }
+
 
     @Override
     protected void onStart() {
@@ -311,7 +322,6 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         SocketClient.socketListener.registerCallback(this);
         if(SocketClient.isConnected())
             sendData(Constantes.UPDATETEXT,MainActivity.context);
-
     }
 
     @Override
@@ -324,13 +334,14 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
     protected void onRestart() {
         super.onRestart();
         if(!SocketClient.isConnected()){
+            ConnectServer();
         }
 
     }
 
     public void setProgressDialog(){
         pdEspera = new ProgressDialog(this);
-        pdEspera.setMessage("Espere...");
+        pdEspera.setMessage(getString(R.string.wait));
         pdEspera.setCanceledOnTouchOutside(false);
     }
 
@@ -338,8 +349,9 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
         buffer=SocketClient.BUFFER;
         i=1;
         textoPantalla.setLength(0);
+        idiomaAnterior=Constantes.IDIOMA;
         Constantes.IDIOMA=buffer[Constantes.POSIDIOMA];
-        changeLanguage(Constantes.IDIOMA);
+        updateResources(MainActivity.this,Constantes.IDIOMASLOCALE[Constantes.IDIOMA-1]);
         elemento=buffer[i++];
         System.out.println();
         while(elemento!=2){
@@ -363,6 +375,10 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
             modo=textoLCD.substring(0,5).replaceAll("\\s+","").toLowerCase();
             System.out.println(modo);
             if(Values.ArrayModos.contains(modo)){
+                if(idiomaAnterior!=Constantes.IDIOMA||chLanOpen) {
+                    chLanOpen=false;
+                    restartApp();
+                }
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
@@ -391,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                                     if(idiomaSelect>=0) {
                                         pdEspera.dismiss();
                                         alertdialog.show();
+                                        chLanOpen=true;
                                     }
                                 }
                             }
@@ -399,6 +416,15 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                 }
             }
         }
+    }
+
+    public void restartApp() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                recreate();
+            }
+        });
     }
 
     public void setIdiomAlertDialog(){
@@ -441,7 +467,8 @@ public class MainActivity extends AppCompatActivity implements ISocketListener {
                         pdEspera.show();
                         sendData(Constantes.PROGMENU, getApplicationContext());
                         Toast.makeText(getApplicationContext(),
-                                "Idioma seleccionado " + idiomas[idiomaSelect], Toast.LENGTH_LONG).show();
+                                getString(R.string.selectedLan) + idiomas[idiomaSelect], Toast.LENGTH_LONG).show();
+                        alertdialog.dismiss();
                     }
                 });
         alertdialog = builder.create();

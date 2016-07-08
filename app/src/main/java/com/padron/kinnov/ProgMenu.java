@@ -47,6 +47,7 @@ public class ProgMenu extends AppCompatActivity implements ISocketListener{
         setContentView(R.layout.activity_prog_menu);
         SocketClient.socketListener.registerCallback(this);
         btnSeleccionar= (FancyButton)findViewById(R.id.btnSeleccionar);
+        btnSeleccionar.getTextViewObject().setTypeface(MainActivity.custom_font);
         ListaProtocolos= new ArrayList<>();
         ListaProtocolos.add(new protocolo((LinearLayout)findViewById(R.id.item1),(TextView) findViewById(R.id.tv_titulo1),(TextView) findViewById(R.id.tv_desc1)));
         ListaProtocolos.add(new protocolo((LinearLayout)findViewById(R.id.item2),(TextView) findViewById(R.id.tv_titulo2),(TextView) findViewById(R.id.tv_desc2)));

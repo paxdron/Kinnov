@@ -209,7 +209,7 @@
         fancy:fb_defaultColor="@color/colorAccent"
         fancy:fb_focusColor="@color/colorAccentDark"
         fancy:fb_radius="64dp"
-        fancy:fb_text="Seleccionar"
+        fancy:fb_text="@string/select"
         fancy:fb_textColor="#FFFFFF"
         fancy:fb_textSize="20sp"
         />

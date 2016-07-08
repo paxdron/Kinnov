@@ -58,6 +58,7 @@ public class SocketClient {
         if(isConnected){
             try {
                 Socket.close();
+                isConnected=false;
             } catch (IOException e) {
                 e.printStackTrace();
                 return false;

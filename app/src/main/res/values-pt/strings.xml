@@ -1,14 +1,14 @@
 <resources>
     <string name="app_name">Kinnov</string>
-    <string name="stim_mode">Modo de Estimulación</string>
-    <string name="carrier">Frecuencia de la Portadora</string>
-    <string name="duracion_burst">Duracion de Burst</string>
-    <string name="frecuencia_burst">Frecuencia de Burst</string>
-    <string name="tiempo_aplicacion">Tiempo de Aplicación</string>
-    <string name="rise">Tiempo de Ascenso</string>
-    <string name="on">Tiempo Encendido</string>
-    <string name="decay">Tiempo de Bajada</string>
-    <string name="off">Tiempo de Reposo</string>
+    <string name="stim_mode">Modo de Estimulação</string>
+    <string name="carrier">Freqüência de portadora</string>
+    <string name="duracion_burst">Duração de Burs</string>
+    <string name="frecuencia_burst">Freqüência de Burst</string>
+    <string name="tiempo_aplicacion">Tempo de Aplicação</string>
+    <string name="rise">Tempo de Subida</string>
+    <string name="on">Tempo Ligado</string>
+    <string name="decay">Tempo de Descida </string>
+    <string name="off">Tempo Desligado</string>
     <string name="hz">Hz</string>
     <string name="ms">ms</string>
     <string name="khz">KHz</string>
@@ -21,51 +21,36 @@
 
     <string name="tituloMaq">NEURODYN AUSSIE SPORT</string>
     <array name="stimm_mode">
-        <item>Continuo</item>
+        <item>Contínuo</item>
         <item>Sicronizado</item>
         <item>Recíproco</item>
     </array>
 
     <array name="titleProtocolos">
-        <item>Modulación del dolor por activación del mecanismo descendente</item>
-        <item>Modulación del dolor por activación del mecanismo ascendente</item>
-        <item>Reducción de edema y drenaje linfático</item>
-        <item>Estimulación Eléctrica Funcional después de Accidente Vascular Cerebral (AVC)</item>
-        <item>Fortalecimiento después de atrofia por desuso</item>
-        <item>Reeducación motriz</item>
-        <item>Fortalecimiento muscular en atletas</item>
+        <item>Modulação da dor por ativação do mecanismo descendente</item>
+        <item>Modulação da dor por ativação do mecanismo ascendente</item>
+        <item>Redução de edema e drenagem linfátic</item>
+        <item>Estimulação Elétrica Funcional Após Acidente Vascular Cerebral (AVC)</item>
+        <item>Fortalecimento após atrofia por desus</item>
+        <item>Reeducação motora</item>
+        <item>Fortalecimiento muscular em atletas</item>
     </array>
 
     <array name="infoProtocolos">
-        <item>Ese protocolo tiene la capacidad de promover la analgesia por la estimulación del
-            mecanismo descendiente relacionado a la liberación de endorfinas.
-        </item>
-        <item>El objetivo del uso de ese protocolo es promover analgesia por la activación de la
-            compuerta de dolor.
-        </item>
-        <item>Ese protocolo de la corriente AUSSIE debe ser utilizado con la con la finalidad de
-            control y reducción de edema así como para procedimientos de drenaje linfático.
-        </item>
-        <item>Ese programa debe ser utilizado para prevenir la atrofia muscular por desuso, prevenir
-            la subluxación del hombro después de episodios de AVC y también para facilitar el
-            reaprendizaje motriz
-        </item>
-        <item>Ese protocolo debe ser utilizado en pacientes que presentan cuadros de atrofia
-            muscular por desuso.
-        </item>
-        <item>Este programa debe ser utilizado con el objetivo de facilitación motriz y
-            reaprendizaje motriz.
-        </item>
-        <item>El objetivo de ese programa es proporcionar el aumento de la fuerza muscular en
-            individuos normales, o sea, sin disfunción del sistema neuro-osteomioarticular.
-        </item>
+        <item>Esse protocolo tem a capacidade de promover a analgesia pela estimulação do mecanismo descendente relacionado à liberação de endorfinas.</item>
+        <item>O objetivo do uso desse protocolo é promover analgesia pela ativação da comporta de dor.</item>
+        <item>Esse protocolo de uso da corrente AUSSIE deve ser utilizado com a finalidade de controle e redução de edema bem como para procedimentos de drenagem linfática.</item>
+        <item>Esse programa deve ser utilizado para prevenir a atrofia muscular por desuso, prevenir a sub-luxação do ombro após episódios de AVC e também para facilitar o reaprendizado motor.</item>
+        <item>Esse protocolo deve ser utilizado em pacientes que apresentam quadros de atrofia muscular por desuso.</item>
+        <item>Esse programa deve ser utilizado com o objetivo de facilitação motora e reaprendizado motor.</item>
+        <item>O objetivo desse programa é proporcionar o aumento da força muscular em indivíduos normais, ou seja, sem disfunção do sistema neuro-osteomioarticular.</item>
     </array>
-    <string name="menuItem">Configuración Red</string>
-    <string name="direccion_ip">Direccion IP</string>
-    <string name="direccion_ip_resumen">Direccion IP del Servidor</string>
-    <string name="puerto_resumen">Puerto del Servidor</string>
-    <string name="puerto">Puerto</string>
-    <string name="pref_gen">Red</string>
+    <string name="menuItem">Configurações de rede</string>
+    <string name="direccion_ip">Endereço de IP</string>
+    <string name="direccion_ip_resumen">Endereço IP do servidor</string>
+    <string name="puerto_resumen">Porta do servidor</string>
+    <string name="puerto">Porta</string>
+    <string name="pref_gen">Rede</string>
 
     <string name="mod_dolor_mec_desc">Modulación del dolor por activación del mecanismo descendente</string>
     <string name="Mod_dolor_mec_asc">Modulación del dolor por activación del mecanismo ascendente</string>
@@ -75,21 +60,24 @@
 
 
     <string name="ch_idiom">Cambiar Idioma</string>
-    <string name="select">Seleccionar</string>
+    <string name="select">Selecionar</string>
     <string name="prog_menu">Prog / Menu</string>
-    <string name="noConn">No se pudo establecer la conexión con el servidor</string>
-    <string name="conectando">Connectando...</string>
-    <string name="end_cycle">Fin de Ciclo</string>
-    <string name="start_stop">Teclee Start/Stop</string>
-    <string name="t_start_stop">Teclee Start/Stop</string>
+    <string name="noConn">Não pôde conectar-se ao servidor</string>
+    <string name="conectando">Conectando&#8230;</string>
+    <string name="end_cycle">Fim de Ciclo</string>
+    <string name="start_stop">Start/Stop</string>
+    <string name="t_start_stop">Pressione Start/Stop</string>
     <string name="start">Start</string>
-    <string name="continuo">Continuo</string>
+    <string name="continuo">Contínuo</string>
     <string name="sincronizado">Sincronizado</string>
+    <string name="reciproco">Recíproco</string>
     <string name="detener">Detener</string>
+    <string name="selectedLan">Idioma Selecionado:&#160;</string>
+    <string name="wait">Esperar&#8230;</string>
 
     <array name="idiomas">
-        <item>Español</item>
-        <item>Inglés</item>
-        <item>Portugués</item>
+        <item>Espanhol</item>
+        <item>Inglês</item>
+        <item>Português</item>
     </array>
 </resources>
